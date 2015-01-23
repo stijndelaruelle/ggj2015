@@ -19,6 +19,10 @@ public class Player : MonoBehaviour
 	private float m_MaxJumpSpeed = 0.0f;
 
 	[SerializeField]
+	private int m_JumpAmount = 0;
+	private int m_CurrentJump = 0;
+
+	[SerializeField]
 	private Transform m_GroundChecker = null;
 
 	bool m_IsJumping = false;
@@ -32,14 +36,25 @@ public class Player : MonoBehaviour
 	{
 		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
 
-		if(Input.GetButtonDown("Jump") && isOnGround)
+		//Start jumping
+		if(Input.GetButtonDown("Jump") && m_JumpAmount > 0)
 		{
-			m_IsJumping = true;
+			++m_CurrentJump;
+			if (isOnGround || m_CurrentJump < m_JumpAmount)
+			{
+				m_IsJumping = true;
+			}
 		}
 
+		//Stop jumping
 		if (Input.GetButtonUp("Jump"))
 		{
 			m_IsJumping = false;
+		}
+
+		if (isOnGround)
+		{
+			m_CurrentJump = 0;
 		}
 	}
 
