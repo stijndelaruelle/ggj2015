@@ -13,12 +13,15 @@ public class Player : MonoBehaviour
 	private float m_MaxSpeed = 0.0f;
 
 	[SerializeField]
-	private float m_JumpSpeed = 0.0f;
+	private float m_JumpAcceleration = 0.0f;
+
+	[SerializeField]
+	private float m_MaxJumpSpeed = 0.0f;
 
 	[SerializeField]
 	private Transform m_GroundChecker = null;
-	
- 	bool m_IsOnGround = false;
+
+	bool m_IsJumping = false;
 
 	//-----------------
 	// Functions
@@ -27,7 +30,17 @@ public class Player : MonoBehaviour
 	// Update is called once per frame
 	private void Update ()
 	{
-		m_IsOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
+		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
+
+		if(Input.GetButtonDown("Jump") && isOnGround)
+		{
+			m_IsJumping = true;
+		}
+
+		if (Input.GetButtonUp("Jump"))
+		{
+			m_IsJumping = false;
+		}
 	}
 
 	//We use FixedUpdate for any physics related stuff
@@ -48,9 +61,14 @@ public class Player : MonoBehaviour
 		}
 
 		//Jumping
-		if(Input.GetButtonDown("Jump") && m_IsOnGround)
+		if (m_IsJumping)
 		{
-			rigidbody2D.AddForce(new Vector2(0.0f, m_JumpSpeed));
+			rigidbody2D.AddForce(new Vector2(0.0f, m_JumpAcceleration));
+
+			if (Mathf.Abs(rigidbody2D.velocity.y) > m_MaxJumpSpeed)
+			{
+				m_IsJumping = false;
+			}
 		}
 	}
 
