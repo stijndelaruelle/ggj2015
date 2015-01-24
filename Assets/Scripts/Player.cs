@@ -35,6 +35,9 @@ public class Player : MonoBehaviour
 	private Gun m_GatlingGun = null;
 
 	[SerializeField]
+	private Gun m_GrenadeLauncher = null;
+
+	[SerializeField]
 	private Transform m_GroundChecker = null;
 
 	bool m_IsJumping = false;
@@ -126,11 +129,14 @@ public class Player : MonoBehaviour
 
 	private void HandleShooting()
 	{
-		if (!m_GatlingGun) return;
-
-		if(Input.GetButton("Fire2"))
+		if((m_GatlingGun != null) && Input.GetButton("Fire2"))
 		{
 			m_GatlingGun.Fire(m_HorizDirection);
+		}
+
+		if ((m_GrenadeLauncher != null) && Input.GetButton("Fire3"))
+		{
+			m_GrenadeLauncher.Fire (m_HorizDirection);
 		}
 	}
 

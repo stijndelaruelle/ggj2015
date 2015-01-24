@@ -7,13 +7,13 @@ public class Projectile : MonoBehaviour
 	private float m_Speed;
 	
 	// Use this for initialization
-	void Start ()
+	virtual protected void Start ()
 	{
 		Vector2 newFwd = transform.rotation * Vector3.up;
 		rigidbody2D.AddForce(newFwd * m_Speed);
 	}
 
-	void Update()
+	private void Update()
 	{
 		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
 
