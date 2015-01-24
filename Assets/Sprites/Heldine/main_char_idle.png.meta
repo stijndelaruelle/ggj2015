@@ -1,10 +1,12 @@
 fileFormatVersion: 2
-guid: bcbfb8d57f9758f46a38d43750b68aa3
+guid: e6fac7764d418ac4da5215b060ab79a5
 TextureImporter:
   fileIDToRecycleName:
-    21300000: squirrel_runcycle_2
-    21300002: squirrel_runcycle_1
-    21300004: squirrel_runcycle_0
+    21300000: main_char_idle_0
+    21300002: main_char_idle_1
+    21300004: main_char_idle_2
+    21300006: main_char_idle_3
+    21300008: main_char_idle_4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -30,7 +32,7 @@ TextureImporter:
     filterMode: 0
     aniso: 16
     mipBias: -1
-    wrapMode: -1
+    wrapMode: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -46,35 +48,55 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: squirrel_runcycle_2
+    - name: main_char_idle_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 95
-        height: 65
+        width: 85
+        height: 106
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: squirrel_runcycle_1
+    - name: main_char_idle_1
       rect:
         serializedVersion: 2
-        x: 95
+        x: 85
         y: 0
-        width: 95
-        height: 65
+        width: 85
+        height: 106
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: squirrel_runcycle_0
+    - name: main_char_idle_2
       rect:
         serializedVersion: 2
-        x: 190
+        x: 170
         y: 0
-        width: 95
-        height: 65
+        width: 85
+        height: 106
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: main_char_idle_3
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 0
+        width: 85
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: main_char_idle_4
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 0
+        width: 85
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

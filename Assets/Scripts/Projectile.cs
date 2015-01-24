@@ -32,18 +32,8 @@ public class Projectile : MonoBehaviour
 
 			collision.gameObject.collider2D.enabled = false;
 
-			switch(collision.gameObject.tag)
-			{
-			case "Boss":
-				collision.gameObject.GetComponent<MasterPuppy>().canDamage = false;
-				collision.gameObject.GetComponent<MasterPuppy>().KillCountdown();
-				break;
-			default:
-				collision.gameObject.GetComponent<Enemy>().canDamage = false;
-				collision.gameObject.GetComponent<Enemy>().KillCountdown();
-				break;
-			}
-
+			collision.gameObject.GetComponent<Enemy>().canDamage = false;
+			collision.gameObject.GetComponent<Enemy>().KillCountdown();
 		}
 
 		Destroy(gameObject);

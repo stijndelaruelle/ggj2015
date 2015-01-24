@@ -14,16 +14,20 @@ public class Enemy : MonoBehaviour
 	//private SpriteRenderer enemySprite;
 	private float lastHitTime;
 	public bool canDamage = true;
+	private bool animationOverride = false;
+	private Animator spriteAnim;
 
 	// Use this for initialization
 	void Start () 
 	{
-		//enemySprite = this.GetComponent<SpriteRenderer>();
+		spriteAnim = gameObject.GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () 
 	{
+		SetAnimation();
+
 		//Move the enemy
 		rigidbody2D.velocity = new Vector2(transform.localScale.x * moveSpeed, rigidbody2D.velocity.y);
 
@@ -110,6 +114,8 @@ public class Enemy : MonoBehaviour
 	public IEnumerator KillCountdownRoutine()
 	{
 		float timer = killTime;
+		animationOverride = true;
+		spriteAnim.SetInteger("AnimID", 2);
 
 		while (timer > 0.0f)
 		{
@@ -122,7 +128,17 @@ public class Enemy : MonoBehaviour
 
 	void Die()
 	{
-		//Play death animation?
 		Destroy(this.gameObject);
+	}
+
+	void SetAnimation()
+	{
+		if(!animationOverride)
+		{
+			if(Mathf.Abs(rigidbody2D.velocity.x) > .1f)
+				spriteAnim.SetInteger("AnimID", 1);
+			else
+				spriteAnim.SetInteger("AnimID", 0);
+		}
 	}
 }

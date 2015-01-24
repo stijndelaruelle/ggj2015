@@ -80,6 +80,10 @@ public class Player : MonoBehaviour
 	private Gun   m_CachedGatlingGun = null;
 	private Gun   m_CachedGrenadeLauncher = null;
 
+	//Animation
+	private bool animationOverride = false;
+	private Animator spriteAnim;
+
 	//-----------------
 	// Functions
 	//-----------------
@@ -95,6 +99,9 @@ public class Player : MonoBehaviour
 
 		Health = MaxHealth;
 		m_HealthRegenTimer = m_HealthRegenRate;
+
+		//Animator Reference
+		spriteAnim = gameObject.GetComponent<Animator>();
 	}
 
 	private void Respawn()
@@ -266,6 +273,14 @@ public class Player : MonoBehaviour
 			Vector3 newScale = transform.localScale;
 			newScale.x = transform.localScale.x * -1.0f;
 			transform.localScale = newScale;
+		}
+
+		if(!animationOverride)
+		{
+			if(Mathf.Abs(rigidbody2D.velocity.x) > .1f)
+				spriteAnim.SetInteger("AnimID", 2);
+			else
+				spriteAnim.SetInteger("AnimID", 1);
 		}
 	}
 
