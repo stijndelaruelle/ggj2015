@@ -77,7 +77,8 @@ public class LevelSwapper : MonoBehaviour
 	public IEnumerator FadeIn()
 	{
 		float timer = m_FadeTime;
-		
+		m_FadeImage.gameObject.SetActive(true);
+
 		while (timer > 0.0f)
 		{
 			//Fade the texture
@@ -94,12 +95,14 @@ public class LevelSwapper : MonoBehaviour
 		}
 
 		m_FadeImage.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+		m_FadeImage.gameObject.SetActive(false);
 	}
 
 	public IEnumerator SwapLevelRoutine()
 	{
 		float timer = m_FadeTime;
-		
+		m_FadeImage.gameObject.SetActive(true);
+
 		while (timer > 0.0f)
 		{
 			//Fade the texture
@@ -116,6 +119,7 @@ public class LevelSwapper : MonoBehaviour
 		}
 			
 		m_FadeImage.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+		m_FadeImage.gameObject.SetActive(false);
 
 		//Swap level
 		Application.LoadLevel(NextLevel);

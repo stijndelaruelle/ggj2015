@@ -4,6 +4,13 @@ using System.Collections;
 public class Player : MonoBehaviour
 {
 	//-----------------
+	// Events
+	//-----------------
+	public delegate void BoringDelegate();
+	public event BoringDelegate OnHealthChanged;
+	public event BoringDelegate OnMaxHealthChanged;
+
+	//-----------------
 	// Datamembers
 	//-----------------
 
@@ -21,17 +28,39 @@ public class Player : MonoBehaviour
 	[SerializeField] private float m_MaxJumpSpeed = 0.0f;
 	[SerializeField] public  int m_JumpAmount = 0;
 
+	//Health
+	[SerializeField] private int m_Health = 0;
+	[SerializeField] private int m_MaxHealth = 0;
+	[SerializeField] public float m_HealthRegenRate = 0; //Time in seconds for a heart to refil
+
 	//Weapons
 	[SerializeField] public  Gun m_GatlingGun = null;
 	[SerializeField] public  Gun m_GrenadeLauncher = null;
-
-	//Health
-	[SerializeField] public int m_Health = 0;
-	[SerializeField] public int m_MaxHealth = 0;
-	[SerializeField] public float m_HealthRegenRate = 0; //Time in seconds for a heart to refil
-	[SerializeField] public float m_HealthRegenWait = 0;
-
+	
 	[SerializeField] private Transform m_GroundChecker = null;
+
+	//-----------------
+	// Accessors
+	//-----------------
+	public int Health
+	{
+		get { return m_Health; }
+		set
+		{
+			m_Health = value;
+			if (OnHealthChanged != null) OnHealthChanged();
+		}
+	}
+
+	public int MaxHealth
+	{
+		get { return m_MaxHealth; }
+		set
+		{
+			m_MaxHealth = value;
+			if (OnMaxHealthChanged != null) OnMaxHealthChanged();
+		}
+	}
 
 	private bool m_IsJumping = false;
 	private bool m_IsDashing = false;
@@ -68,7 +97,7 @@ public class Player : MonoBehaviour
 		m_CachedGatlingGun      = m_GatlingGun;
 		m_CachedGrenadeLauncher = m_GrenadeLauncher;
 
-		m_Health = m_MaxHealth;
+		Health = MaxHealth;
 		m_HealthRegenTimer = m_HealthRegenRate;
 
 		//Animator Reference
@@ -85,7 +114,7 @@ public class Player : MonoBehaviour
 		m_GatlingGun      = m_CachedGatlingGun;
 		m_GrenadeLauncher = m_CachedGrenadeLauncher;
 
-		m_Health = m_MaxHealth;
+		m_Health = MaxHealth;
 		m_HealthRegenTimer = m_HealthRegenRate;
 	}
 
@@ -98,6 +127,9 @@ public class Player : MonoBehaviour
 		m_CurrentJump = 0;
 
 		m_HorizDirection = 1.0f;
+
+		OnHealthChanged();
+		OnMaxHealthChanged();
 
 		//Look for spawn position
 		GameObject spawn = GameObject.FindGameObjectWithTag("Spawn");
@@ -167,6 +199,7 @@ public class Player : MonoBehaviour
 	{
 		m_Health -= damage;
 		m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
+		OnHealthChanged();
 	}
 
 	private void HandleMovement()
