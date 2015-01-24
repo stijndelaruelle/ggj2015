@@ -22,4 +22,9 @@ public class Projectile : MonoBehaviour
 			Destroy(gameObject);
 		}
 	}
+
+	virtual protected void OnCollisionEnter2D(Collision2D collision)
+	{
+		Destroy(gameObject);
+	}
 }

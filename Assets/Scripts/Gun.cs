@@ -12,6 +12,9 @@ public class Gun : MonoBehaviour
 	[SerializeField]
 	private float m_ReloadTime;
 
+	[SerializeField]
+	private float m_RecoilForce;
+
 	private bool m_CanShoot = true;
 
 	public void Fire(float horizDirection)
@@ -28,8 +31,10 @@ public class Gun : MonoBehaviour
 
 		//Instantiate the bullet
 		Instantiate(m_Projectile, transform.position, angle);
-
 		StartCoroutine(ReloadCoroutine());
+
+		//Add recoil for the player
+		transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(-horizDirection * m_RecoilForce, 0.0f), ForceMode2D.Impulse);
 	}
 
 	private IEnumerator ReloadCoroutine()

@@ -54,4 +54,9 @@ public class Grenade : Projectile
 
 		Destroy (this.gameObject);
 	}
+
+	override protected void OnCollisionEnter2D(Collision2D collision)
+	{
+		//Do nothing
+	}
 }
