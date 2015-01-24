@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour
 
 	//private SpriteRenderer enemySprite;
 	private float lastHitTime;
-	private bool canDamage = true;
+	public bool canDamage = true;
 
 	// Use this for initialization
 	void Start () 
@@ -71,7 +71,6 @@ public class Enemy : MonoBehaviour
 			   Mathf.Abs (collidingObject.rigidbody.velocity.x) > dashSpeedThreshold)
 			{
 				Vector2 throwVector = transform.position - collidingObject.transform.position + Vector3.up * .1f;
-				Debug.Log(throwVector);
 				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 250);
 			
 				canDamage = false;
@@ -103,7 +102,7 @@ public class Enemy : MonoBehaviour
 		transform.localScale = enemyScale;
 	}
 
-	private IEnumerator KillCountdown()
+	public IEnumerator KillCountdown()
 	{
 		float timer = killTime;
 		

@@ -25,6 +25,17 @@ public class Projectile : MonoBehaviour
 
 	virtual protected void OnCollisionEnter2D(Collision2D collision)
 	{
+		if(collision.gameObject.layer == 12)
+		{
+			Vector2 throwVector = collision.transform.position - transform.position + Vector3.up * .1f;
+			gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collision.rigidbody.velocity.x) * 250);
+
+			collision.gameObject.GetComponent<Enemy>().canDamage = false;
+			collision.gameObject.collider2D.enabled = false;
+
+			StartCoroutine(collision.gameObject.GetComponent<Enemy>().KillCountdown());
+		}
+
 		Destroy(gameObject);
 	}
 }
