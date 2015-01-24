@@ -9,13 +9,13 @@ public class Enemy : MonoBehaviour
 	public Transform frontCheck;
 	public Transform topCheck;
 
-	private SpriteRenderer enemySprite;
+	//private SpriteRenderer enemySprite;
 	private float lastHitTime;
 
 	// Use this for initialization
 	void Start () 
 	{
-		enemySprite = this.GetComponent<SpriteRenderer>();
+		//enemySprite = this.GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame

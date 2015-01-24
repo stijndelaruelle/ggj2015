@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
 	private int m_CurrentJump = 0;
 
 	[SerializeField]
-	private Gun m_Gun = null;
+	private Gun m_GatlingGun = null;
 
 	[SerializeField]
 	private Transform m_GroundChecker = null;
@@ -126,11 +126,11 @@ public class Player : MonoBehaviour
 
 	private void HandleShooting()
 	{
-		if (!m_Gun) return;
+		if (!m_GatlingGun) return;
 
-		if(Input.GetButtonDown("Fire2"))
+		if(Input.GetButton("Fire2"))
 		{
-			m_Gun.Fire(m_HorizDirection);
+			m_GatlingGun.Fire(m_HorizDirection);
 		}
 	}
 

@@ -9,6 +9,17 @@ public class Projectile : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		rigidbody2D.AddForce(Vector2.right * m_Speed);
+		Vector2 newFwd = transform.rotation * Vector3.up;
+		rigidbody2D.AddForce(newFwd * m_Speed);
+	}
+
+	void Update()
+	{
+		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+
+		if(pos.x < 0.0f || pos.x > 1.0f || pos.y < 0.0f || pos.y > 1.0f)
+		{
+			Destroy(gameObject);
+		}
 	}
 }
