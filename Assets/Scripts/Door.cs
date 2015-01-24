@@ -4,7 +4,10 @@ using System.Collections;
 public class Door : MonoBehaviour
 {
 	[SerializeField]
-	private string m_LevelName;
+	private string m_LevelName = "";
+
+	[SerializeField]
+	private bool m_RemoveAbility = true;
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
@@ -14,7 +17,9 @@ public class Door : MonoBehaviour
 			other.gameObject.GetComponent<Player>().AutoWalk(1.0f);
 
 			LevelSwapper.Instance.NextLevel = m_LevelName;
-			AbilityMenu.Instance.SetActive(true);
+
+			if (m_RemoveAbility) { AbilityMenu.Instance.SetActive(true); }
+			else 				 { LevelSwapper.Instance.SwapLevel(); }
 		}
 	}
 }

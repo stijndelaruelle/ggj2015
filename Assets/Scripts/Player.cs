@@ -26,9 +26,10 @@ public class Player : MonoBehaviour
 	[SerializeField] public  Gun m_GrenadeLauncher = null;
 
 	//Health
-	[SerializeField] public float m_Health = 0;
-	[SerializeField] public float m_MaxHealth = 0;
-	[SerializeField] public float m_HealthRegen = 0;
+	[SerializeField] public int m_Health = 0;
+	[SerializeField] public int m_MaxHealth = 0;
+	[SerializeField] public float m_HealthRegenRate = 0; //Time in seconds for a heart to refil
+	[SerializeField] public float m_HealthRegenWait = 0;
 
 	[SerializeField] private Transform m_GroundChecker = null;
 
@@ -39,17 +40,56 @@ public class Player : MonoBehaviour
 	private int m_CurrentJump = 0;
 
 	private float m_HorizDirection = 1.0f;
-	
+	private float m_HealthRegenTimer = 0.0f;
+
+	//Cashed values, in case we respawn
+	private float m_CachedAcceleration = 0.0f;
+	private float m_CachedDashDuration = 0.0f;
+	private int   m_CachedJumpAmount = 0;
+	private int   m_CachedMaxHealth = 0;
+	private float m_CachedHealthRegen = 0;
+	private Gun   m_CachedGatlingGun = null;
+	private Gun   m_CachedGrenadeLauncher = null;
+
 	//-----------------
 	// Functions
 	//-----------------
+	private void Awake()
+	{
+		m_CachedAcceleration    = m_Acceleration;
+		m_CachedDashDuration    = m_DashDuration;
+		m_CachedJumpAmount      = m_JumpAmount;
+		m_CachedMaxHealth       = m_MaxHealth;
+		m_CachedHealthRegen     = m_HealthRegenRate;
+		m_CachedGatlingGun      = m_GatlingGun;
+		m_CachedGrenadeLauncher = m_GrenadeLauncher;
+
+		m_Health = m_MaxHealth;
+		m_HealthRegenTimer = m_HealthRegenRate;
+	}
+
+	private void Respawn()
+	{
+		m_Acceleration    = m_CachedAcceleration;
+		m_DashDuration    = m_CachedDashDuration;
+		m_JumpAmount      = m_CachedJumpAmount;
+		m_MaxHealth       = m_CachedMaxHealth;
+		m_HealthRegenRate = m_CachedHealthRegen;
+		m_GatlingGun      = m_CachedGatlingGun;
+		m_GrenadeLauncher = m_CachedGrenadeLauncher;
+
+		m_Health = m_MaxHealth;
+		m_HealthRegenTimer = m_HealthRegenRate;
+	}
+
 	private void OnLevelWasLoaded()
 	{
 		m_IsJumping = false;
 		m_IsDashing = false;
 		m_IsAutoWalking = false;
 		m_CanDash = true;
-		
+		m_CurrentJump = 0;
+
 		m_HorizDirection = 1.0f;
 
 		//Look for spawn position
@@ -102,12 +142,24 @@ public class Player : MonoBehaviour
 		//Health
 		if(m_Health <= 0)
 		{
-			Destroy (this.gameObject);
+			Respawn();
+			LevelSwapper.Instance.NextLevel = "level1";
+			LevelSwapper.Instance.SwapLevel();
 		}
-		
-		//Regenerate health
-		m_Health += Time.deltaTime * m_HealthRegen;
-		m_Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
+
+		//Regeneration
+		if (m_HealthRegenTimer <= 0.0f && m_HealthRegenRate > 0.0f)
+		{
+			m_Health += 1;
+			m_Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
+			m_HealthRegenTimer = m_HealthRegenRate;
+		}
+	}
+
+	public void TakeDamage(int damage)
+	{
+		m_Health -= damage;
+		m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
 	}
 
 	private void HandleMovement()
@@ -165,7 +217,7 @@ public class Player : MonoBehaviour
 		if((m_GatlingGun != null) && Input.GetButton("Fire2"))
 		{
 			m_GatlingGun.Fire(m_HorizDirection);
-			StartCoroutine(Camera.main.GetComponent<Screenshake>().Screenshaker());
+			Camera.main.GetComponent<Screenshake>().ScreenShake();
 		}
 
 		if ((m_GrenadeLauncher != null) && Input.GetButton("Fire3"))

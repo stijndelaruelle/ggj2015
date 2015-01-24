@@ -13,22 +13,17 @@ public class Screenshake : MonoBehaviour
 		startingPosition = transform.position;
 	}
 
-	public IEnumerator Screenshaker(float strength, float length)
+	public void ScreenShake()
 	{
-		float timer = length;
-
-		while(timer > 0)
-		{
-			timer -= Time.deltaTime;
-
-			transform.position = new Vector3(startingPosition.x + Random.Range(-strength, strength),
-			                                 startingPosition.y + Random.Range(-strength, strength),
-			                                 startingPosition.z);
-			yield return new WaitForEndOfFrame();
-		}
+		StartCoroutine(ScreenshakeRoutine());
 	}
 
-	public IEnumerator Screenshaker()
+	public void ScreenShake(float strength, float length)
+	{
+		StartCoroutine(ScreenshakeRoutine(strength, length));
+	}
+
+	private IEnumerator ScreenshakeRoutine()
 	{
 		float timer = shakeLength;
 		
@@ -41,7 +36,22 @@ public class Screenshake : MonoBehaviour
 			                                 startingPosition.z);
 			yield return new WaitForEndOfFrame();
 		}
-
+		
 		transform.position = startingPosition;
+	}
+
+	private IEnumerator ScreenshakeRoutine(float strength, float length)
+	{
+		float timer = length;
+
+		while(timer > 0)
+		{
+			timer -= Time.deltaTime;
+
+			transform.position = new Vector3(startingPosition.x + Random.Range(-strength, strength),
+			                                 startingPosition.y + Random.Range(-strength, strength),
+			                                 startingPosition.z);
+			yield return new WaitForEndOfFrame();
+		}
 	}
 }

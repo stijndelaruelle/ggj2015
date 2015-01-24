@@ -77,8 +77,8 @@ public class AbilityMenu : MonoBehaviour
 		if (m_Player.m_JumpAmount > 1) { AddButton((int)Ability.DoubleJump, "Double Jump"); }
 
 		//Health
-		if (m_Player.m_MaxHealth > 1)   { AddButton((int)Ability.Health, "Health"); }
-		if (m_Player.m_HealthRegen > 0) { AddButton((int)Ability.HealthRegen, "health regen"); }
+		if (m_Player.m_MaxHealth > 1)       { AddButton((int)Ability.Health, "Health"); }
+		if (m_Player.m_HealthRegenRate > 0) { AddButton((int)Ability.HealthRegen, "health regen"); }
 
 		//Weapons
 		if (m_Player.m_GatlingGun != null)  	 { AddButton((int)Ability.GatlingGun, "Gatling gun"); }
@@ -114,12 +114,13 @@ public class AbilityMenu : MonoBehaviour
 
 			case Ability.Health:
 				Debug.Log ("We removed the health ability!");
+				m_Player.m_Health = 1;
 				m_Player.m_MaxHealth = 1;
 				break;
 
 			case Ability.HealthRegen:
 				Debug.Log ("We removed the heathregen ability!");
-				m_Player.m_HealthRegen = 1;
+				m_Player.m_HealthRegenRate = -1.0f;
 				break;
 
 			case Ability.GatlingGun:

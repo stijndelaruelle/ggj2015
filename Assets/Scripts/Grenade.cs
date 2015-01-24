@@ -50,7 +50,7 @@ public class Grenade : Projectile
 				if(bombHits[i].tag == "Player")
 				{
 					//Do damage to player
-					bombHits[i].gameObject.GetComponent<Health>().TakeDamage(m_Damage);
+					bombHits[i].gameObject.GetComponent<Player>().TakeDamage(m_Damage);
 				}
 				else
 				{
@@ -58,8 +58,8 @@ public class Grenade : Projectile
 				}
 			}
 		}
-
-		StartCoroutine(Camera.main.GetComponent<Screenshake>().Screenshaker());
+		
+		Camera.main.GetComponent<Screenshake>().ScreenShake();
 
 		Destroy (this.gameObject);
 	}
