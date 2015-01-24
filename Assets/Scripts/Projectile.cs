@@ -30,10 +30,20 @@ public class Projectile : MonoBehaviour
 			Vector2 throwVector = collision.transform.position - transform.position + Vector3.up * .1f;
 			gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collision.rigidbody.velocity.x) * 250);
 
-			collision.gameObject.GetComponent<Enemy>().canDamage = false;
 			collision.gameObject.collider2D.enabled = false;
 
-			collision.gameObject.GetComponent<Enemy>().KillCountdown();
+			switch(collision.gameObject.tag)
+			{
+			case "Boss":
+				collision.gameObject.GetComponent<MasterPuppy>().canDamage = false;
+				collision.gameObject.GetComponent<MasterPuppy>().KillCountdown();
+				break;
+			default:
+				collision.gameObject.GetComponent<Enemy>().canDamage = false;
+				collision.gameObject.GetComponent<Enemy>().KillCountdown();
+				break;
+			}
+
 		}
 
 		Destroy(gameObject);
