@@ -41,7 +41,7 @@ public class Grenade : Projectile
 
 		for(int i = 0 ; i < bombHits.Length; i++)
 		{
-			if(bombHits[i].tag == "Enemy" || bombHits[i].tag == "Player")
+			if(bombHits[i].gameObject.layer == 12 || bombHits[i].tag == "Player")
 			{
 				Vector2 throwVector = bombHits[i].transform.position - this.transform.position + Vector3.up * 5f;
 
@@ -54,7 +54,18 @@ public class Grenade : Projectile
 				}
 				else
 				{
-					bombHits[i].gameObject.GetComponent<Enemy>().KillCountdown();
+					Debug.Log("check");
+					switch(bombHits[i].gameObject.tag)
+					{
+					case "Boss":
+						bombHits[i].gameObject.GetComponent<MasterPuppy>().canDamage = false;
+						bombHits[i].gameObject.GetComponent<MasterPuppy>().KillCountdown();
+						break;
+					default:
+						bombHits[i].gameObject.GetComponent<Enemy>().canDamage = false;
+						bombHits[i].gameObject.GetComponent<Enemy>().KillCountdown();
+						break;
+					}
 				}
 			}
 		}
