@@ -4,7 +4,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour 
 {
 	public float moveSpeed = 2f;
-	public int enemyHealth = 1;
+	public float enemyDamage = 1f;
 	public float repeatDamageTime = 2f;
 	public Transform frontCheck;
 	public Transform topCheck;
@@ -30,7 +30,7 @@ public class Enemy : MonoBehaviour
 		foreach(Collider2D frontColliding in frontHits)
 		{
 			// If any of the colliders is an Obstacle...
-			if(frontColliding.tag == "Obstacle")
+			if(frontColliding.tag == "Obstacle" || frontColliding.tag == "Enemy")
 			{
 				// ... Flip the enemy and stop checking the other colliders.
 				Flip ();
@@ -59,6 +59,7 @@ public class Enemy : MonoBehaviour
 			lastHitTime = Time.time;
 
 			//Let player take damage
+			collidingObject.gameObject.GetComponent<Health>().health -= enemyDamage;
 
 			//Make player jump from damage
 			Vector3 hurtVector = collidingObject.transform.position - this.transform.position + Vector3.up * 5f;
