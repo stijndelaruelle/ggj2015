@@ -129,6 +129,7 @@ public class Player : MonoBehaviour
 		if((m_GatlingGun != null) && Input.GetButton("Fire2"))
 		{
 			m_GatlingGun.Fire(m_HorizDirection);
+			StartCoroutine(Camera.main.GetComponent<Screenshake>().Screenshaker());
 		}
 
 		if ((m_GrenadeLauncher != null) && Input.GetButton("Fire3"))

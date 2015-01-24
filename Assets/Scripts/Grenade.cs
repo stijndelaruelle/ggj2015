@@ -47,10 +47,19 @@ public class Grenade : Projectile
 
 				bombHits[i].gameObject.rigidbody2D.AddForce(throwVector * m_ThrowForce);
 
-				//Do damage to player
-				bombHits[i].gameObject.GetComponent<Health>().TakeDamage(m_Damage);
+				if(bombHits[i].tag == "Player")
+				{
+					//Do damage to player
+					bombHits[i].gameObject.GetComponent<Health>().TakeDamage(m_Damage);
+				}
+				else
+				{
+					bombHits[i].gameObject.GetComponent<Enemy>().KillCountdown();
+				}
 			}
 		}
+
+		StartCoroutine(Camera.main.GetComponent<Screenshake>().Screenshaker());
 
 		Destroy (this.gameObject);
 	}

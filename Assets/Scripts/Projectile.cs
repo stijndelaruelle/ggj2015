@@ -33,7 +33,7 @@ public class Projectile : MonoBehaviour
 			collision.gameObject.GetComponent<Enemy>().canDamage = false;
 			collision.gameObject.collider2D.enabled = false;
 
-			StartCoroutine(collision.gameObject.GetComponent<Enemy>().KillCountdown());
+			collision.gameObject.GetComponent<Enemy>().KillCountdown();
 		}
 
 		Destroy(gameObject);

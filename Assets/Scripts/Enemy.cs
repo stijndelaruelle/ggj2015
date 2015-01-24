@@ -76,7 +76,7 @@ public class Enemy : MonoBehaviour
 				canDamage = false;
 				collider2D.enabled = false;
 
-				StartCoroutine(KillCountdown());
+				KillCountdown();
 			}
 			else if(canDamage && Time.time > lastHitTime + repeatDamageTime)
 			{
@@ -102,16 +102,21 @@ public class Enemy : MonoBehaviour
 		transform.localScale = enemyScale;
 	}
 
-	public IEnumerator KillCountdown()
+	public void KillCountdown()
+	{
+		StartCoroutine(KillCountdownRoutine());
+	}
+
+	public IEnumerator KillCountdownRoutine()
 	{
 		float timer = killTime;
-		
+
 		while (timer > 0.0f)
 		{
 			timer -= Time.deltaTime;
 			yield return new WaitForEndOfFrame();
 		}
-		
+
 		Destroy(gameObject);
 	}
 
