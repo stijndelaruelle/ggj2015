@@ -6,9 +6,9 @@ public class Enemy : MonoBehaviour
 	public float moveSpeed = 2f;
 	public float enemyDamage = 1f;
 	public float repeatDamageTime = 2f;
+	public float dashSpeedThreshold = 10f;
 	public Transform frontCheck;
 	public Transform topCheck;
-	//public Transform bottomCheck;
 
 	//private SpriteRenderer enemySprite;
 	private float lastHitTime;
@@ -63,18 +63,28 @@ public class Enemy : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D collidingObject)
 	{
-		if(collidingObject.gameObject.tag == "Player" && Time.time > lastHitTime + repeatDamageTime)
+		if(collidingObject.gameObject.tag == "Player")
 		{
-			lastHitTime = Time.time;
+			if(!collidingObject.gameObject.GetComponent<Player>().m_CanDash && 
+			   Mathf.Abs (collidingObject.rigidbody.velocity.x) > dashSpeedThreshold)
+			{
 
-			//Let player take damage
-			collidingObject.gameObject.GetComponent<Health>().health -= enemyDamage;
 
-			//Make player jump from damage
-			Vector3 hurtVector = collidingObject.transform.position - this.transform.position + Vector3.up * 5f;
-			collidingObject.gameObject.rigidbody2D.AddForce(hurtVector * 30);
-			
-			Flip ();
+				Destroy (gameObject);
+			}
+			else if(Time.time > lastHitTime + repeatDamageTime)
+			{
+				lastHitTime = Time.time;
+
+				//Let player take damage
+				collidingObject.gameObject.GetComponent<Health>().health -= enemyDamage;
+
+				//Make player jump from damage
+				Vector3 hurtVector = collidingObject.transform.position - this.transform.position + Vector3.up * 5f;
+				collidingObject.gameObject.rigidbody2D.AddForce(hurtVector * 30);
+				
+				Flip ();
+			}
 		}
 	}
 

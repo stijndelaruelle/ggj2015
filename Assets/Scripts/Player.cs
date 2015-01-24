@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
 
 	bool m_IsJumping = false;
 	float m_HorizDirection = 1.0f;
-	bool m_CanDash = true;
+	public bool m_CanDash = true;
 
 	//-----------------
 	// Functions
@@ -113,6 +113,8 @@ public class Player : MonoBehaviour
 				m_IsJumping = false;
 			}
 		}
+
+
 
 		//Clamp horizontal speed
 		float maxSpeed = m_MaxSpeed;
