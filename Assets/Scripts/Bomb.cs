@@ -33,10 +33,10 @@ public class Bomb : MonoBehaviour
 
 					//Do damage to player
 					bombHits[i].gameObject.GetComponent<Health>().health -= bombDamage;
-
-					Destroy (this.gameObject);
 				}
 			}
+
+			Destroy (this.gameObject);
 		}
 	}
 }

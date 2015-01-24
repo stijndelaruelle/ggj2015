@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
 	public float repeatDamageTime = 2f;
 	public Transform frontCheck;
 	public Transform topCheck;
+	public Transform bottomCheck;
 
 	private SpriteRenderer enemySprite;
 	private float lastHitTime;
@@ -37,6 +38,14 @@ public class Enemy : MonoBehaviour
 				break;
 			}
 		}
+
+		//Collider2D bottomCheck = Physics2D.OverlapPoint(bottomCheck.position);	
+//		// Check each of the colliders.
+//		if(bottomCheck.Length == 0)
+//		{
+//			Flip ();
+//			break;
+//		}
 
 		// Create an array of all the colliders in front of the enemy.
 		Collider2D[] topHits = Physics2D.OverlapPointAll(topCheck.position, 1);	
