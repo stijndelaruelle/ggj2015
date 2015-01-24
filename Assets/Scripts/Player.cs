@@ -19,13 +19,27 @@ public class Player : MonoBehaviour
 	private float m_MaxJumpSpeed = 0.0f;
 
 	[SerializeField]
+	private float m_DashAcceleration = 0.0f;
+
+	[SerializeField]
+	private float m_MaxDashSpeed = 0.0f;
+
+	[SerializeField]
+	private float m_DashCooldown = 0.0f;
+
+	[SerializeField]
 	private int m_JumpAmount = 0;
 	private int m_CurrentJump = 0;
+
+	[SerializeField]
+	private Gun m_Gun = null;
 
 	[SerializeField]
 	private Transform m_GroundChecker = null;
 
 	bool m_IsJumping = false;
+	float m_HorizDirection = 1.0f;
+	bool m_CanDash = true;
 
 	//-----------------
 	// Functions
@@ -62,17 +76,31 @@ public class Player : MonoBehaviour
 	private void FixedUpdate()
 	{
 		HandleMovement();
+		HandleShooting();
 		HandleAnimations();
 	}
 
 	private void HandleMovement()
 	{
 		float horizInput = Input.GetAxis("Horizontal");
+		if (Mathf.Abs(horizInput) > 0.0f) m_HorizDirection = Mathf.Sign(horizInput);
 
-		//Running
-		if(Mathf.Abs(rigidbody2D.velocity.x) < m_MaxSpeed || Mathf.Sign(horizInput) != Mathf.Sign(rigidbody2D.velocity.x))
+		//Dashing
+		if(m_CanDash && Input.GetButtonDown("Fire1"))
 		{
-			rigidbody2D.AddForce(Vector2.right * horizInput * m_Acceleration);
+			//Dash!
+			rigidbody2D.AddForce(Vector2.right * m_HorizDirection * m_DashAcceleration);
+
+			//Start cooldown
+			StartCoroutine(DashCooldownRoutine());
+		}
+		else
+		{
+			//Running
+			if(Mathf.Abs(rigidbody2D.velocity.x) < m_MaxSpeed || Mathf.Sign(horizInput) != Mathf.Sign(rigidbody2D.velocity.x))
+			{
+				rigidbody2D.AddForce(Vector2.right * horizInput * m_Acceleration);
+			}
 		}
 
 		//Jumping
@@ -85,6 +113,25 @@ public class Player : MonoBehaviour
 				m_IsJumping = false;
 			}
 		}
+
+		//Clamp horizontal speed
+		float maxSpeed = m_MaxSpeed;
+		if (!m_CanDash) maxSpeed = m_MaxDashSpeed;
+
+		if (Mathf.Abs(rigidbody2D.velocity.x) > maxSpeed)
+		{
+			rigidbody2D.velocity = new Vector2(m_HorizDirection * maxSpeed, rigidbody2D.velocity.y);
+		}
+	}
+
+	private void HandleShooting()
+	{
+		if (!m_Gun) return;
+
+		if(Input.GetButtonDown("Fire2"))
+		{
+			m_Gun.Fire(m_HorizDirection);
+		}
 	}
 
 	private void HandleAnimations()
@@ -92,5 +139,19 @@ public class Player : MonoBehaviour
 		Vector3 theScale = transform.localScale;
 		theScale.x = transform.localScale.x * Mathf.Sign(rigidbody2D.velocity.x);
 		transform.localScale = theScale;
+	}
+
+	private IEnumerator DashCooldownRoutine()
+	{
+		m_CanDash = false;
+		float timer = m_DashCooldown;
+
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+
+		m_CanDash = true;
 	}
 }
