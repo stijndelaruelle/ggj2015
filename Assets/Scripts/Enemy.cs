@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
 		foreach(Collider2D frontColliding in frontHits)
 		{
 			// If any of the colliders is an Obstacle...
-			if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == "Ground")
+			if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == 8)
 			{
 				// ... Flip the enemy and stop checking the other colliders.
 				Flip ();
