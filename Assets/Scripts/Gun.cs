@@ -7,6 +7,9 @@ public class Gun : MonoBehaviour
 	private Projectile m_Projectile;
 
 	[SerializeField]
+	private float m_SpreadAngle;
+
+	[SerializeField]
 	private float m_ReloadTime;
 
 	private bool m_CanShoot = true;
@@ -16,6 +19,12 @@ public class Gun : MonoBehaviour
 		if (!m_Projectile || !m_CanShoot) return;
 
 		Quaternion angle = Quaternion.Euler(new Vector3(0.0f, 0.0f, -horizDirection * 90.0f));
+
+		//Add random spread
+		float randAngle = Random.Range(-m_SpreadAngle, m_SpreadAngle);
+		Quaternion spread = Quaternion.Euler(new Vector3(0.0f, 0.0f, randAngle));
+
+		angle *= spread;
 
 		//Instantiate the bullet
 		Instantiate(m_Projectile, transform.position, angle);
