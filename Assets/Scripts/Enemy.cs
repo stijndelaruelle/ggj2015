@@ -7,11 +7,13 @@ public class Enemy : MonoBehaviour
 	public float enemyDamage = 1f;
 	public float repeatDamageTime = 2f;
 	public float dashSpeedThreshold = 10f;
+	public float killTime = .5f;
 	public Transform frontCheck;
 	public Transform topCheck;
 
 	//private SpriteRenderer enemySprite;
 	private float lastHitTime;
+	private bool canDamage = true;
 
 	// Use this for initialization
 	void Start () 
@@ -68,11 +70,15 @@ public class Enemy : MonoBehaviour
 			if(!collidingObject.gameObject.GetComponent<Player>().m_CanDash && 
 			   Mathf.Abs (collidingObject.rigidbody.velocity.x) > dashSpeedThreshold)
 			{
+				Vector2 throwVector = transform.position - collidingObject.transform.position + Vector3.up * .1f;
+				Debug.Log(throwVector);
+				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 50);
+			
+				canDamage = false;
 
-
-				Destroy (gameObject);
+				StartCoroutine(KillCountdown());
 			}
-			else if(Time.time > lastHitTime + repeatDamageTime)
+			else if(canDamage &&  Time.time > lastHitTime + repeatDamageTime)
 			{
 				lastHitTime = Time.time;
 
@@ -93,6 +99,19 @@ public class Enemy : MonoBehaviour
 		Vector3 enemyScale = transform.localScale;
 		enemyScale.x *= -1;
 		transform.localScale = enemyScale;
+	}
+
+	private IEnumerator KillCountdown()
+	{
+		float timer = killTime;
+		
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+		
+		Destroy(gameObject);
 	}
 
 	void Die()
