@@ -68,9 +68,7 @@ public class Enemy : MonoBehaviour
 			if(!collidingObject.gameObject.GetComponent<Player>().m_CanDash && 
 			   Mathf.Abs (collidingObject.rigidbody.velocity.x) > dashSpeedThreshold)
 			{
-
-
-				Destroy (gameObject);
+				Die();
 			}
 			else if(Time.time > lastHitTime + repeatDamageTime)
 			{

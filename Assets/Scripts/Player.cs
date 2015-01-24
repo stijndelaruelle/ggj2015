@@ -6,53 +6,66 @@ public class Player : MonoBehaviour
 	//-----------------
 	// Datamembers
 	//-----------------
-	[SerializeField]
-	private float m_Acceleration = 0.0f;
 
-	[SerializeField]
-	private float m_MaxSpeed = 0.0f;
+	//Run
+	[SerializeField] public  float m_Acceleration = 0.0f;
+	[SerializeField] private float m_MaxSpeed = 0.0f;
 
-	[SerializeField]
-	private float m_JumpAcceleration = 0.0f;
+	//Dash
+	[SerializeField] private float m_DashAcceleration = 0.0f;
+	[SerializeField] public  float m_DashDuration = 0.0f;
+	[SerializeField] private float m_DashCooldown = 0.0f;
 
-	[SerializeField]
-	private float m_MaxJumpSpeed = 0.0f;
+	//Jump
+	[SerializeField] private float m_JumpAcceleration = 0.0f;
+	[SerializeField] private float m_MaxJumpSpeed = 0.0f;
+	[SerializeField] public  int m_JumpAmount = 0;
 
-	[SerializeField]
-	private float m_DashAcceleration = 0.0f;
+	//Weapons
+	[SerializeField] public  Gun m_GatlingGun = null;
+	[SerializeField] public  Gun m_GrenadeLauncher = null;
 
-	[SerializeField]
-	private float m_DashDuration = 0.0f;
+	//Health
+	[SerializeField] public float m_Health = 0;
+	[SerializeField] public float m_MaxHealth = 0;
+	[SerializeField] public float m_HealthRegen = 0;
 
-	[SerializeField]
-	private float m_DashCooldown = 0.0f;
-
-	[SerializeField]
-	private int m_JumpAmount = 0;
-	private int m_CurrentJump = 0;
-
-	[SerializeField]
-	private Gun m_GatlingGun = null;
-
-	[SerializeField]
-	private Gun m_GrenadeLauncher = null;
-
-	[SerializeField]
-	private Transform m_GroundChecker = null;
+	[SerializeField] private Transform m_GroundChecker = null;
 
 	private bool m_IsJumping = false;
 	private bool m_IsDashing = false;
-	private float m_HorizDirection = 1.0f;
-	public bool m_CanDash = true;
+	private bool m_IsAutoWalking = false;
+	public  bool m_CanDash = true;
+	private int m_CurrentJump = 0;
 
+	private float m_HorizDirection = 1.0f;
+	
 	//-----------------
 	// Functions
 	//-----------------
+	private void OnLevelWasLoaded()
+	{
+		m_IsJumping = false;
+		m_IsDashing = false;
+		m_IsAutoWalking = false;
+		m_CanDash = true;
+		
+		m_HorizDirection = 1.0f;
+
+		//Look for spawn position
+		GameObject spawn = GameObject.FindGameObjectWithTag("Spawn");
+		if (spawn != null)
+		{
+			transform.position = spawn.transform.position;
+		}
+	}
 
 	// Update is called once per frame
 	private void Update ()
 	{
 		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
+
+		HandleHealth();
 
 		//Start jumping
 		if(Input.GetButtonDown("Jump") && m_JumpAmount > 0)
@@ -84,8 +97,23 @@ public class Player : MonoBehaviour
 		HandleAnimations();
 	}
 
+	private void HandleHealth()
+	{
+		//Health
+		if(m_Health <= 0)
+		{
+			Destroy (this.gameObject);
+		}
+		
+		//Regenerate health
+		m_Health += Time.deltaTime * m_HealthRegen;
+		m_Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
+	}
+
 	private void HandleMovement()
 	{
+		if (m_IsAutoWalking) return;
+
 		//Dashing
 		if(m_CanDash && Input.GetButtonDown("Fire1"))
 		{
@@ -122,6 +150,14 @@ public class Player : MonoBehaviour
 				m_IsJumping = false;
 			}
 		}
+
+		//Keep ourselves within the screen bounts
+		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+		
+		if(pos.x < 0.0f || pos.x > 1.0f)
+		{
+			rigidbody2D.velocity = new Vector2(0.0f, rigidbody2D.velocity.y);
+		}
 	}
 
 	private void HandleShooting()
@@ -147,6 +183,7 @@ public class Player : MonoBehaviour
 		}
 	}
 
+	#region Dashing
 	private IEnumerator DashRoutine()
 	{
 		m_IsDashing = true;
@@ -180,4 +217,34 @@ public class Player : MonoBehaviour
 
 		m_CanDash = true;
 	}
+	#endregion
+
+	#region AutoWalk
+	public void AutoWalk(float duration)
+	{
+		StartCoroutine(AutoWalkRoutine(duration));
+	}
+
+	private IEnumerator AutoWalkRoutine(float duration)
+	{
+		m_IsAutoWalking = true;
+		float timer = duration;
+		
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			rigidbody2D.AddForce(Vector2.right * Mathf.Sign(rigidbody2D.velocity.x) * (m_Acceleration / 5.0f));
+
+			//Clamp
+			if (Mathf.Abs(rigidbody2D.velocity.x) > (m_MaxSpeed / 5.0f))
+			{
+				rigidbody2D.velocity = new Vector2(Vector2.right.x * Mathf.Sign(rigidbody2D.velocity.x) * (m_MaxSpeed / 5.0f), rigidbody2D.velocity.y);
+			}
+
+			yield return new WaitForEndOfFrame();
+		}
+		
+		//m_IsAutoWalking = false;
+	}
+	#endregion
 }
