@@ -40,10 +40,10 @@ public class Player : MonoBehaviour
 	[SerializeField]
 	private Transform m_GroundChecker = null;
 
-	bool m_IsJumping = false;
-	bool m_IsDashing = false;
-	float m_HorizDirection = 1.0f;
-	bool m_CanDash = true;
+	private bool m_IsJumping = false;
+	private bool m_IsDashing = false;
+	private float m_HorizDirection = 1.0f;
+	public bool m_CanDash = true;
 
 	//-----------------
 	// Functions
