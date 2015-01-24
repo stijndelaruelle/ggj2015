@@ -32,6 +32,9 @@ public class Player : MonoBehaviour
 	private int m_CurrentJump = 0;
 
 	[SerializeField]
+	private Gun m_Gun = null;
+
+	[SerializeField]
 	private Transform m_GroundChecker = null;
 
 	bool m_IsJumping = false;
@@ -73,6 +76,7 @@ public class Player : MonoBehaviour
 	private void FixedUpdate()
 	{
 		HandleMovement();
+		HandleShooting();
 		HandleAnimations();
 	}
 
@@ -117,6 +121,16 @@ public class Player : MonoBehaviour
 		if (Mathf.Abs(rigidbody2D.velocity.x) > maxSpeed)
 		{
 			rigidbody2D.velocity = new Vector2(m_HorizDirection * maxSpeed, rigidbody2D.velocity.y);
+		}
+	}
+
+	private void HandleShooting()
+	{
+		if (!m_Gun) return;
+
+		if(Input.GetButtonDown("Fire2"))
+		{
+			m_Gun.Fire(m_HorizDirection);
 		}
 	}
 
