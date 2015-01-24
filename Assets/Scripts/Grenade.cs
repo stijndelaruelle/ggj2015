@@ -4,7 +4,7 @@ using System.Collections;
 public class Grenade : Projectile 
 {
 	[SerializeField]
-	private float m_Damage = 1.0f;
+	private int m_Damage = 1;
 
 	[SerializeField]
 	private float m_ThrowForce = 50.0f;
@@ -48,7 +48,7 @@ public class Grenade : Projectile
 				bombHits[i].gameObject.rigidbody2D.AddForce(throwVector * m_ThrowForce);
 
 				//Do damage to player
-				bombHits[i].gameObject.GetComponent<Health>().health -= m_Damage;
+				bombHits[i].gameObject.GetComponent<Health>().TakeDamage(m_Damage);
 			}
 		}
 

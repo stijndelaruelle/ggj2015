@@ -4,7 +4,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour 
 {
 	public float moveSpeed = 2f;
-	public float enemyDamage = 1f;
+	public int enemyDamage = 1;
 	public float repeatDamageTime = 2f;
 	public float dashSpeedThreshold = 10f;
 	public float killTime = .5f;
@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
 		foreach(Collider2D frontColliding in frontHits)
 		{
 			// If any of the colliders is an Obstacle...
-			if(frontColliding.tag == "Obstacle" || frontColliding.tag == "Enemy")
+			if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == "Ground")
 			{
 				// ... Flip the enemy and stop checking the other colliders.
 				Flip ();
@@ -50,7 +50,7 @@ public class Enemy : MonoBehaviour
 			Flip ();
 
 		// Create an array of all the colliders in front of the enemy.
-		Collider2D[] topHits = Physics2D.OverlapPointAll(topCheck.position, 1);	
+		Collider2D[] topHits = Physics2D.OverlapPointAll(topCheck.position);	
 		// Check each of the colliders.
 		foreach(Collider2D topColliding in topHits)
 		{
@@ -72,18 +72,20 @@ public class Enemy : MonoBehaviour
 			{
 				Vector2 throwVector = transform.position - collidingObject.transform.position + Vector3.up * .1f;
 				Debug.Log(throwVector);
-				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 50);
+				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 250);
 			
 				canDamage = false;
+				collider2D.enabled = false;
 
 				StartCoroutine(KillCountdown());
 			}
-			else if(canDamage &&  Time.time > lastHitTime + repeatDamageTime)
+			else if(canDamage && Time.time > lastHitTime + repeatDamageTime)
 			{
+
 				lastHitTime = Time.time;
 
 				//Let player take damage
-				collidingObject.gameObject.GetComponent<Health>().health -= enemyDamage;
+				collidingObject.gameObject.GetComponent<Health>().TakeDamage(enemyDamage);
 
 				//Make player jump from damage
 				Vector3 hurtVector = collidingObject.transform.position - this.transform.position + Vector3.up * 5f;
