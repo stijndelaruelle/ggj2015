@@ -2,10 +2,10 @@ fileFormatVersion: 2
 guid: ca286fd68f57d2544bd5e2ddfa8721ce
 TextureImporter:
   fileIDToRecycleName:
-    21300000: squirrel_idle_0
-    21300002: squirrel_idle_1
-    21300004: squirrel_idle_2
-    21300006: squirrel_idle_3
+    21300000: squirrel_idle_3
+    21300002: squirrel_idle_2
+    21300004: squirrel_idle_1
+    21300006: squirrel_idle_0
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -47,7 +47,7 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: squirrel_idle_0
+    - name: squirrel_idle_3
       rect:
         serializedVersion: 2
         x: 0
@@ -55,9 +55,9 @@ TextureImporter:
         width: 70
         height: 65
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: squirrel_idle_1
+    - name: squirrel_idle_2
       rect:
         serializedVersion: 2
         x: 70
@@ -65,9 +65,9 @@ TextureImporter:
         width: 70
         height: 65
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: squirrel_idle_2
+    - name: squirrel_idle_1
       rect:
         serializedVersion: 2
         x: 140
@@ -75,9 +75,9 @@ TextureImporter:
         width: 70
         height: 65
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: squirrel_idle_3
+    - name: squirrel_idle_0
       rect:
         serializedVersion: 2
         x: 210
@@ -85,7 +85,7 @@ TextureImporter:
         width: 70
         height: 65
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

@@ -54,18 +54,8 @@ public class Grenade : Projectile
 				}
 				else
 				{
-					Debug.Log("check");
-					switch(bombHits[i].gameObject.tag)
-					{
-					case "Boss":
-						bombHits[i].gameObject.GetComponent<MasterPuppy>().canDamage = false;
-						bombHits[i].gameObject.GetComponent<MasterPuppy>().KillCountdown();
-						break;
-					default:
-						bombHits[i].gameObject.GetComponent<Enemy>().canDamage = false;
-						bombHits[i].gameObject.GetComponent<Enemy>().KillCountdown();
-						break;
-					}
+					bombHits[i].gameObject.GetComponent<Enemy>().canDamage = false;
+					bombHits[i].gameObject.GetComponent<Enemy>().KillCountdown();
 				}
 			}
 		}

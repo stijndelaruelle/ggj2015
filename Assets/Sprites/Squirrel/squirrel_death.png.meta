@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: bcbfb8d57f9758f46a38d43750b68aa3
+guid: 120a25d6b4b7c984f8406478ffae3e49
 TextureImporter:
   fileIDToRecycleName:
-    21300000: squirrel_runcycle_2
-    21300002: squirrel_runcycle_1
-    21300004: squirrel_runcycle_0
+    21300000: squirrel_death_5
+    21300002: squirrel_death_4
+    21300004: squirrel_death_3
+    21300006: squirrel_death_2
+    21300008: squirrel_death_1
+    21300010: squirrel_death_0
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -46,33 +49,63 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: squirrel_runcycle_2
+    - name: squirrel_death_5
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 95
-        height: 65
+        width: 81
+        height: 76
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: squirrel_runcycle_1
+    - name: squirrel_death_4
       rect:
         serializedVersion: 2
-        x: 95
+        x: 81
         y: 0
-        width: 95
-        height: 65
+        width: 81
+        height: 76
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: squirrel_runcycle_0
+    - name: squirrel_death_3
       rect:
         serializedVersion: 2
-        x: 190
+        x: 162
         y: 0
-        width: 95
-        height: 65
+        width: 81
+        height: 76
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: squirrel_death_2
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 0
+        width: 81
+        height: 76
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: squirrel_death_1
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 81
+        height: 76
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: squirrel_death_0
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 0
+        width: 81
+        height: 76
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
