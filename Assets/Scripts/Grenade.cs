@@ -18,9 +18,6 @@ public class Grenade : Projectile
 	override protected void Start()
 	{
 		base.Start();
-
-		rigidbody2D.AddForce(transform.localScale.x * Vector2.one * 1250);
-
 		StartCoroutine(DetonateRoutine());
 	}
 
