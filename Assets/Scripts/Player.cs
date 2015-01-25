@@ -86,6 +86,8 @@ public class Player : MonoBehaviour
 	//Animation
 	private bool animationOverride = false;
 	private Animator spriteAnim;
+	[SerializeField] private SpriteRenderer spriteRen;
+	private bool invincible = false;
 
 	//-----------------
 	// Functions
@@ -218,6 +220,8 @@ public class Player : MonoBehaviour
 	{
 		m_Health -= damage;
 		m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
+
+		StartCoroutine(InvincibleBlinkingRoutine());
 		OnHealthChanged();
 	}
 
@@ -433,4 +437,26 @@ public class Player : MonoBehaviour
 		LevelSwapper.Instance.SwapLevel();
 	}
 
+	private IEnumerator InvincibleBlinkingRoutine()
+	{
+		//Flash flash Invincibility!
+		invincible = true;
+		
+		spriteRen.enabled = false;
+		yield return new WaitForSeconds(.1f);
+		spriteRen.enabled = true;
+		spriteRen.material.color = Color.red;
+		yield return new WaitForSeconds(.1f);
+		spriteRen.enabled = false;
+		yield return new WaitForSeconds(.2f);
+		spriteRen.material.color = Color.white;
+		spriteRen.enabled = true;
+		yield return new WaitForSeconds(.2f);
+		spriteRen.enabled = false;
+		yield return new WaitForSeconds(.2f);
+		spriteRen.enabled = true;
+		
+		
+		invincible = false;
+	}
 }
