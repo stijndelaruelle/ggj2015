@@ -290,6 +290,10 @@ public class Player : MonoBehaviour
 		m_IsDashing = true;
 		float timer = m_DashDuration;
 
+		//Play Animation
+		animationOverride = true;
+		spriteAnim.SetInteger("AnimID", 6);
+
 		//Ignore gaviry & put y velocity at 0
 		rigidbody2D.gravityScale = 0.0f;
 		rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0.0f);
@@ -303,6 +307,9 @@ public class Player : MonoBehaviour
 
 		rigidbody2D.gravityScale = 3.0f;
 		m_IsDashing = false;
+
+		//Disable The Override
+		animationOverride = false;
 	}
 
 	private IEnumerator DashCooldownRoutine()
