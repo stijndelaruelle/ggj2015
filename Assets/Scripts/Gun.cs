@@ -15,7 +15,7 @@ public class Gun : MonoBehaviour
 	[SerializeField]
 	private float m_RecoilForce;
 
-	private bool m_CanShoot = true;
+	public bool m_CanShoot = true;		//Made public to use for animator on player
 
 	public void Fire(float horizDirection)
 	{

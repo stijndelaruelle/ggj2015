@@ -1,7 +1,9 @@
 fileFormatVersion: 2
 guid: 5a2d29009dad67e49ac61e83e65b3f89
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: main_char_gatlingun_fire_0
+    21300002: main_char_gatlingun_fire_1
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -42,6 +44,26 @@ TextureImporter:
   textureType: 5
   buildTargetSettings: []
   spriteSheet:
-    sprites: []
+    sprites:
+    - name: main_char_gatlingun_fire_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 267
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: main_char_gatlingun_fire_1
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 0
+        width: 267
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

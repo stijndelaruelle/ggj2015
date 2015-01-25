@@ -174,6 +174,8 @@ public class Player : MonoBehaviour
 		HandleMovement();
 		HandleShooting();
 		HandleAnimations();
+
+		CheckDeath();	//Check if player needs to have it's death animation played
 	}
 
 	private void HandleHealth()
@@ -258,10 +260,17 @@ public class Player : MonoBehaviour
 		{
 			m_GatlingGun.Fire(m_HorizDirection);
 			Camera.main.GetComponent<Screenshake>().ScreenShake();
+
+			//Play Animation
+			StartCoroutine(PlayAnimationRoutine(3, .167f));
 		}
 
 		if ((m_GrenadeLauncher != null) && Input.GetButton("Fire3"))
 		{
+			//Play Animation
+			if(m_GrenadeLauncher.m_CanShoot)
+				StartCoroutine(PlayAnimationRoutine(4, .167f));
+
 			m_GrenadeLauncher.Fire (m_HorizDirection);
 		}
 	}
@@ -360,5 +369,28 @@ public class Player : MonoBehaviour
 	{
 		rigidbody2D.velocity = new Vector3(0.0f, 0.0f, 0.0f);
 		transform.position = position;
+	}
+
+	void CheckDeath()
+	{
+		if(m_Health <= 0)
+		{
+			StartCoroutine(PlayAnimationRoutine(5, .5f));
+		}
+	}
+
+	IEnumerator PlayAnimationRoutine(int ID, float animationLength)
+	{
+		float timer = animationLength;
+		animationOverride = true;
+		spriteAnim.SetInteger("AnimID", ID);
+		
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+
+		animationOverride = false;
 	}
 }

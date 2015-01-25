@@ -62,7 +62,7 @@ public class Grenade : Projectile
 		
 		Camera.main.GetComponent<Screenshake>().ScreenShake();
 
-		Destroy (this.gameObject);
+		Destroy(gameObject);
 	}
 
 	override protected void OnCollisionEnter2D(Collision2D collision)
