@@ -8,6 +8,7 @@ TextureImporter:
     21300006: main_char_death_3
     21300008: main_char_death_4
     21300010: main_char_death_5
+    21300012: main_char_death_6
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -87,7 +88,7 @@ TextureImporter:
         width: 117
         height: 106
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: main_char_death_4
       rect:
@@ -107,7 +108,17 @@ TextureImporter:
         width: 117
         height: 106
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: main_char_death_6
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 0
+        width: 117
+        height: 106
+      alignment: 0
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 
