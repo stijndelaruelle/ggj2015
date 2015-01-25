@@ -193,11 +193,15 @@ public class Player : MonoBehaviour
 		}
 
 		//Regeneration
-		if (m_HealthRegenTimer <= 0.0f && m_HealthRegenRate > 0.0f)
+		if (m_HealthRegenRate > 0.0f && m_Health != m_MaxHealth)
 		{
-			m_Health += 1;
-			m_Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
-			m_HealthRegenTimer = m_HealthRegenRate;
+			m_HealthRegenTimer -= Time.deltaTime;
+			if (m_HealthRegenTimer <= 0.0f)
+			{
+				m_Health += 1;
+				Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
+				m_HealthRegenTimer = m_HealthRegenRate;
+			}
 		}
 	}
 
