@@ -15,6 +15,11 @@ public class Grenade : Projectile
 	[SerializeField]
 	private float m_Range = 2.0f;
 
+	[SerializeField]
+	private GameObject m_Explosion;
+
+	private bool earlyDetonation = false;
+
 	override protected void Start()
 	{
 		base.Start();
@@ -25,6 +30,7 @@ public class Grenade : Projectile
 	{
 		if(Input.GetButtonDown("Fire3"))
 		{
+			earlyDetonation = true;
 			Detonate();
 		}
 	}
@@ -35,6 +41,8 @@ public class Grenade : Projectile
 		
 		while (timer > 0.0f)
 		{
+			if(earlyDetonation) break;
+
 			timer -= Time.deltaTime;
 			yield return new WaitForEndOfFrame();
 		}
@@ -66,6 +74,9 @@ public class Grenade : Projectile
 				}
 			}
 		}
+
+		//Play animation
+		Instantiate(m_Explosion, transform.position, Quaternion.identity);
 		
 		Camera.main.GetComponent<Screenshake>().ScreenShake();
 
