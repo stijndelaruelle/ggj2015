@@ -75,7 +75,7 @@ public class Grenade : Projectile
 			}
 		}
 
-		//Play animation
+		//Spawn explosion animation
 		Instantiate(m_Explosion, transform.position, Quaternion.identity);
 		
 		Camera.main.GetComponent<Screenshake>().ScreenShake();
