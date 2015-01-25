@@ -175,6 +175,8 @@ public class Player : MonoBehaviour
 		HandleMovement();
 		HandleShooting();
 		HandleAnimations();
+
+		CheckDeath();	//Check if player needs to have it's death animation played
 	}
 
 	private void HandleHealth()
@@ -275,10 +277,17 @@ public class Player : MonoBehaviour
 		{
 			m_GatlingGun.Fire(m_HorizDirection);
 			Camera.main.GetComponent<Screenshake>().ScreenShake();
+
+			//Play Animation
+			StartCoroutine(PlayAnimationRoutine(3, .167f));
 		}
 
 		if ((m_GrenadeLauncher != null) && Input.GetButton("Fire3"))
 		{
+			//Play Animation
+			if(m_GrenadeLauncher.m_CanShoot)
+				StartCoroutine(PlayAnimationRoutine(4, .167f));
+
 			m_GrenadeLauncher.Fire (m_HorizDirection);
 		}
 	}
@@ -307,6 +316,10 @@ public class Player : MonoBehaviour
 		m_IsDashing = true;
 		float timer = m_DashDuration;
 
+		//Play Animation
+		animationOverride = true;
+		spriteAnim.SetInteger("AnimID", 6);
+
 		//Ignore gaviry & put y velocity at 0
 		rigidbody2D.gravityScale = 0.0f;
 		rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0.0f);
@@ -320,6 +333,9 @@ public class Player : MonoBehaviour
 
 		rigidbody2D.gravityScale = 3.0f;
 		m_IsDashing = false;
+
+		//Disable The Override
+		animationOverride = false;
 	}
 
 	private IEnumerator DashCooldownRoutine()
@@ -370,5 +386,28 @@ public class Player : MonoBehaviour
 	{
 		rigidbody2D.velocity = new Vector3(0.0f, 0.0f, 0.0f);
 		transform.position = position;
+	}
+
+	void CheckDeath()
+	{
+		if(m_Health <= 0)
+		{
+			StartCoroutine(PlayAnimationRoutine(5, .5f));
+		}
+	}
+
+	IEnumerator PlayAnimationRoutine(int ID, float animationLength)
+	{
+		float timer = animationLength;
+		animationOverride = true;
+		spriteAnim.SetInteger("AnimID", ID);
+		
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+
+		animationOverride = false;
 	}
 }

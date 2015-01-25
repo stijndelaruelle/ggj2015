@@ -62,6 +62,8 @@ public class Enemy : MonoBehaviour
 			// If any of the colliders is an Obstacle...
 			if(topColliding.tag == "Player")
 			{
+				topColliding.gameObject.rigidbody2D.AddForce(Vector2.up * Mathf.Abs(topColliding.rigidbody2D.velocity.x) * 100);
+
 				Die();
 				break;
 			}
@@ -76,7 +78,7 @@ public class Enemy : MonoBehaviour
 			   Mathf.Abs (collidingObject.rigidbody.velocity.x) > dashSpeedThreshold)
 			{
 				Vector2 throwVector = transform.position - collidingObject.transform.position + Vector3.up * .1f;
-				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 250);
+				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 50);
 			
 				canDamage = false;
 				collider2D.enabled = false;
@@ -129,7 +131,7 @@ public class Enemy : MonoBehaviour
 
 	void Die()
 	{
-		Destroy(this.gameObject);
+		Destroy(gameObject);
 	}
 
 	void SetAnimation()
