@@ -177,6 +177,11 @@ public class Player : MonoBehaviour
 		{
 			m_CurrentJump = 0;
 		}
+
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			m_Health = 0;
+		}
 	}
 
 	//We use FixedUpdate for any physics related stuff
