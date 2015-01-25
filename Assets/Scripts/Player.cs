@@ -355,4 +355,10 @@ public class Player : MonoBehaviour
 		//m_IsAutoWalking = false;
 	}
 	#endregion
+
+	public void Teleport(Vector3 position)
+	{
+		rigidbody2D.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+		transform.position = position;
+	}
 }
