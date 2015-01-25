@@ -52,6 +52,8 @@ public class Gun : MonoBehaviour
 
 		//Screenshake, huj huj huj!
 		Camera.main.GetComponent<Screenshake>().ScreenShake(m_ScreenShakeStrength, m_ScreenShakeLength);
+
+
 	}
 
 	private IEnumerator ReloadCoroutine()
