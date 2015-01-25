@@ -15,6 +15,12 @@ public class Gun : MonoBehaviour
 	[SerializeField]
 	private float m_RecoilForce;
 
+	[SerializeField]
+	private float m_ScreenShakeStrength;
+
+	[SerializeField]
+	private float m_ScreenShakeLength;
+
 	public bool m_CanShoot = true;		//Made public to use for animator on player
 
 	public void Fire(float horizDirection)
@@ -35,6 +41,9 @@ public class Gun : MonoBehaviour
 
 		//Add recoil for the player
 		transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(-horizDirection * m_RecoilForce, 0.0f), ForceMode2D.Impulse);
+
+		//Screenshake, huj huj huj!
+		Camera.main.GetComponent<Screenshake>().ScreenShake(m_ScreenShakeStrength, m_ScreenShakeLength);
 	}
 
 	private IEnumerator ReloadCoroutine()
