@@ -44,14 +44,7 @@ public class Gun : MonoBehaviour
 		angle *= spread;
 
 		//Instantiate the bullet
-		Rigidbody2D bullet;
-		bullet = Instantiate(m_Projectile, transform.position, angle) as Rigidbody2D;
-//		if(isGrenade)
-//		{
-//			Vector2 bulletAngle = angle * Vector2.right;
-//			Debug.Log(bullet);
-//			bullet.rigidbody2D.AddForce(bulletAngle * 150);
-//		}
+		Instantiate(m_Projectile, transform.position, angle);
 		StartCoroutine(ReloadCoroutine());
 
 		//Add recoil for the player
