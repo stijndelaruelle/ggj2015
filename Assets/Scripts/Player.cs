@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
 	
 	[SerializeField] private Transform m_GroundChecker = null;
 	[SerializeField] private Transform m_FrontCheck = null;
+	[SerializeField] private bool m_IsDead;
 
 	//-----------------
 	// Accessors
@@ -125,6 +126,7 @@ public class Player : MonoBehaviour
 		m_IsDashing = false;
 		m_IsAutoWalking = false;
 		m_CanDash = true;
+		m_IsDead = false;
 		m_CurrentJump = 0;
 
 		m_HorizDirection = 1.0f;
@@ -172,11 +174,12 @@ public class Player : MonoBehaviour
 	//We use FixedUpdate for any physics related stuff
 	private void FixedUpdate()
 	{
+		CheckDeath();	//Check if player needs to have it's death animation played
+		if (m_IsDead) return;
+
 		HandleMovement();
 		HandleShooting();
 		HandleAnimations();
-
-		CheckDeath();	//Check if player needs to have it's death animation played
 	}
 
 	private void HandleHealth()
@@ -186,7 +189,7 @@ public class Player : MonoBehaviour
 		{
 			Respawn();
 			LevelSwapper.Instance.NextLevel = "level0";
-			LevelSwapper.Instance.SwapLevel();
+			StartCoroutine(WaitForFadeRoutine(1.0f));
 		}
 
 		//Regeneration
@@ -276,7 +279,6 @@ public class Player : MonoBehaviour
 		if((m_GatlingGun != null) && Input.GetButton("Fire2"))
 		{
 			m_GatlingGun.Fire(m_HorizDirection);
-			Camera.main.GetComponent<Screenshake>().ScreenShake();
 
 			//Play Animation
 			StartCoroutine(PlayAnimationRoutine(3, .167f));
@@ -392,11 +394,12 @@ public class Player : MonoBehaviour
 	{
 		if(m_Health <= 0)
 		{
-			StartCoroutine(PlayAnimationRoutine(5, .5f));
+			m_IsDead = true;
+			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
 		}
 	}
 
-	IEnumerator PlayAnimationRoutine(int ID, float animationLength)
+	private IEnumerator PlayAnimationRoutine(int ID, float animationLength)
 	{
 		float timer = animationLength;
 		animationOverride = true;
@@ -410,4 +413,18 @@ public class Player : MonoBehaviour
 
 		animationOverride = false;
 	}
+
+	private IEnumerator WaitForFadeRoutine(float fadeTime)
+	{
+		float timer = fadeTime;
+		
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+		
+		LevelSwapper.Instance.SwapLevel();
+	}
+
 }

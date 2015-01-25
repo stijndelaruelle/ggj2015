@@ -55,7 +55,7 @@ public class LevelSwapper : MonoBehaviour
 	void Start()
 	{
 		NextLevel = "level0";
-		SwapLevel(true);
+		SwapLevel(0.0f);
 	}
 
 	private void Update()
@@ -65,55 +65,55 @@ public class LevelSwapper : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.F1))
 		{
 			m_NextLevel = "level0";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F2))
 		{
 			m_NextLevel = "level1";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F3))
 		{
 			m_NextLevel = "level2";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F4))
 		{
 			m_NextLevel = "level3";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F5))
 		{
 			m_NextLevel = "level4";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F6))
 		{
 			m_NextLevel = "level5";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F7))
 		{
 			m_NextLevel = "level6";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F8))
 		{
 			m_NextLevel = "level7";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 
 		if (Input.GetKeyDown(KeyCode.F9))
 		{
 			m_NextLevel = "level8";
-			SwapLevel(true);
+			SwapLevel(0.0f);
 		}
 	}
 
@@ -122,15 +122,15 @@ public class LevelSwapper : MonoBehaviour
 		StartCoroutine(FadeIn());
 	}
 	
-	public void SwapLevel(bool instant = false)
+	public void SwapLevel(float fadeTime = 2.0f)
 	{
-		if (instant)
+		if (fadeTime <= 0.0f)
 		{
 			Application.LoadLevel(NextLevel);
 			return;
 		}
 
-		StartCoroutine(SwapLevelRoutine());
+		StartCoroutine(SwapLevelRoutine(fadeTime));
 	}
 
 	public IEnumerator FadeIn()
@@ -157,9 +157,9 @@ public class LevelSwapper : MonoBehaviour
 		m_FadeImage.gameObject.SetActive(false);
 	}
 
-	public IEnumerator SwapLevelRoutine()
+	public IEnumerator SwapLevelRoutine(float fadeTime)
 	{
-		float timer = m_FadeTime;
+		float timer = fadeTime;
 		m_FadeImage.gameObject.SetActive(true);
 
 		while (timer > 0.0f)
@@ -168,7 +168,7 @@ public class LevelSwapper : MonoBehaviour
 			if (m_FadeImage != null)
 			{
 				Color newColor = m_FadeImage.color;
-				newColor.a = Mathf.Lerp(0.0f, 1.0f, (m_FadeTime / timer) - 1.0f);
+				newColor.a = Mathf.Lerp(0.0f, 1.0f, (fadeTime / timer) - 1.0f);
 				
 				m_FadeImage.color = newColor;
 			}
