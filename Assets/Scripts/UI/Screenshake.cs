@@ -5,14 +5,7 @@ public class Screenshake : MonoBehaviour
 {
 	public float shakeStrength = .1f;
 	public float shakeLength = .1f;
-
-	private Vector3 startingPosition;
-
-	void Start()
-	{
-		startingPosition = transform.position;
-	}
-
+	
 	public void ScreenShake()
 	{
 		StartCoroutine(ScreenshakeRoutine());
@@ -26,7 +19,8 @@ public class Screenshake : MonoBehaviour
 	private IEnumerator ScreenshakeRoutine()
 	{
 		float timer = shakeLength;
-		
+		Vector3 startingPosition = transform.position;
+
 		while(timer > 0)
 		{
 			timer -= Time.deltaTime;
@@ -36,13 +30,12 @@ public class Screenshake : MonoBehaviour
 			                                 startingPosition.z);
 			yield return new WaitForEndOfFrame();
 		}
-		
-		transform.position = startingPosition;
 	}
 
 	private IEnumerator ScreenshakeRoutine(float strength, float length)
 	{
 		float timer = length;
+		Vector3 startingPosition = transform.position;
 
 		while(timer > 0)
 		{
