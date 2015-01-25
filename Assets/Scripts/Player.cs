@@ -284,7 +284,7 @@ public class Player : MonoBehaviour
 			StartCoroutine(PlayAnimationRoutine(3, .167f));
 		}
 
-		if ((m_GrenadeLauncher != null) && Input.GetButton("Fire3"))
+		if ((m_GrenadeLauncher != null) && Input.GetButtonUp("Fire3"))
 		{
 			//Play Animation
 			if(m_GrenadeLauncher.m_CanShoot)

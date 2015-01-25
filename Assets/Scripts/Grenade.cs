@@ -19,9 +19,17 @@ public class Grenade : Projectile
 	{
 		base.Start();
 
-		rigidbody2D.AddForce(transform.localScale.x * Vector2.one * 1250);
+		rigidbody2D.AddForce(Vector2.one * 250);
 
 		StartCoroutine(DetonateRoutine());
+	}
+
+	void Update()
+	{
+		if(Input.GetButtonDown("Fire3"))
+		{
+			Detonate();
+		}
 	}
 
 	private IEnumerator DetonateRoutine()
