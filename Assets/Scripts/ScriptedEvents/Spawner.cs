@@ -23,14 +23,16 @@ public class Spawner : MonoBehaviour
 
 	private void SpawnBatch()
 	{
+		++m_MinInBatch;
+		++m_MaxInBatch;
 		StartCoroutine(SpawnRoutine());
 	}
 
-	private void Update()
+	public void StopSpawning()
 	{
-
+		StopCoroutine("SpawnRoutine");
 	}
-
+	
 	private IEnumerator SpawnRoutine()
 	{
 		float timer = m_ReloadTime;
@@ -46,10 +48,16 @@ public class Spawner : MonoBehaviour
 		for (int i = 0; i < num; ++i)
 		{
 			Vector3 pos = GameObject.Find ("Player").transform.position;
-			pos.x -= 5.0f;
+			int offset = 5;
+
+			int rand = Random.Range (0, 100);
+			if (rand > 50) offset *= -1;
+
+			pos.x += offset;
 			pos.z = 0.0f;
 
 			GameObject.Instantiate(m_Prefab, pos, transform.rotation);
+			yield return new WaitForSeconds(0.1f);
 		}
 
 		SpawnBatch();

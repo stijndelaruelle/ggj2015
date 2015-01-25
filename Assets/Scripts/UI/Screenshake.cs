@@ -16,11 +16,17 @@ public class Screenshake : MonoBehaviour
 		StartCoroutine(ScreenshakeRoutine(strength, length));
 	}
 
+	public void StopScreenShake()
+	{
+		StopCoroutine(ScreenshakeRoutine());
+	}
+
 	private IEnumerator ScreenshakeRoutine()
 	{
 		float timer = shakeLength;
 		Vector3 startingPosition = transform.position;
 
+		int shakeID;
 		while(timer > 0)
 		{
 			timer -= Time.deltaTime;
