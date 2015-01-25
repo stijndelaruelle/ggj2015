@@ -31,8 +31,6 @@ public class Projectile : MonoBehaviour
 			gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collision.rigidbody.velocity.x) * 250);
 
 			collision.gameObject.collider2D.enabled = false;
-
-			collision.gameObject.GetComponent<Enemy>().canDamage = false;
 			collision.gameObject.GetComponent<Enemy>().KillCountdown();
 		}
 

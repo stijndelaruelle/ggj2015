@@ -21,7 +21,11 @@ TextureImporter:
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
+<<<<<<< HEAD:Assets/Sprites/Trees/Tree_Boring_Bottom01.png.meta
+  textureFormat: -3
+=======
   textureFormat: 4
+>>>>>>> 0da9356cf53a17b9915cbcb38d0cf6824c3acf3f:Assets/Sprites/Trees/Tree_Barkybark_Bottom01.png.meta
   maxTextureSize: 256
   textureSettings:
     filterMode: 0
