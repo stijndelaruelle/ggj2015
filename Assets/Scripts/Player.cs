@@ -38,7 +38,8 @@ public class Player : MonoBehaviour
 	[SerializeField] public  Gun m_GrenadeLauncher = null;
 	
 	[SerializeField] private Transform m_GroundChecker = null;
-	[SerializeField] private Transform m_FrontCheck = null;
+	[SerializeField] private Transform m_FrontCheckA = null;
+	[SerializeField] private Transform m_FrontCheckB = null;
 	[SerializeField] private bool m_IsDead;
 
 	//-----------------
@@ -227,7 +228,7 @@ public class Player : MonoBehaviour
 
 			//Stop sticking to walls
 			bool isSticking = false;
-			Collider2D[] frontHits = Physics2D.OverlapPointAll(m_FrontCheck.position);
+			Collider2D[] frontHits = Physics2D.OverlapAreaAll(m_FrontCheckA.position, m_FrontCheckB.position);
 			foreach(Collider2D frontColliding in frontHits)
 			{
 				// If any of the colliders is an Obstacle...
