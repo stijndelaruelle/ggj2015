@@ -131,7 +131,7 @@ public class Player : MonoBehaviour
 		m_CanDash = true;
 		m_IsDead = false;
 		m_CurrentJump = 0;
-		gameObject.collider2D.enabled = true;
+		gameObject.layer = 9;
 
 		m_HorizDirection = 1.0f;
 
@@ -196,7 +196,7 @@ public class Player : MonoBehaviour
 		{
 			m_IsDead = true;
 			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
-			gameObject.collider2D.enabled = false;
+			gameObject.layer = 15;
 
 			Respawn();
 			LevelSwapper.Instance.NextLevel = "level0";
