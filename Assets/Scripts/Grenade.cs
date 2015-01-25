@@ -18,18 +18,7 @@ public class Grenade : Projectile
 	override protected void Start()
 	{
 		base.Start();
-
-		rigidbody2D.AddForce(Vector2.one * 250);
-
 		StartCoroutine(DetonateRoutine());
-	}
-
-	void Update()
-	{
-		if(Input.GetButtonDown("Fire3"))
-		{
-			Detonate();
-		}
 	}
 
 	private IEnumerator DetonateRoutine()
