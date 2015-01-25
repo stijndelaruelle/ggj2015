@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a6f1677e20c39ba4b80db52aeb11b6be
+guid: 8f4fd8c734d5e7649992dd2c047d693b
 TextureImporter:
   fileIDToRecycleName: {}
   serializedVersion: 2
@@ -22,7 +22,7 @@ TextureImporter:
   generateCubemap: 0
   seamlessCubemap: 0
   textureFormat: 4
-  maxTextureSize: 1024
+  maxTextureSize: 512
   textureSettings:
     filterMode: 0
     aniso: 16

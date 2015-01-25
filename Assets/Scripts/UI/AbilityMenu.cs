@@ -40,6 +40,13 @@ public class AbilityMenu : MonoBehaviour
 
 	[SerializeField]
 	private List<Button> m_Buttons = null;
+	
+	private bool m_SwapLevel = true;
+	public bool SwapLevel
+	{
+		get { return m_SwapLevel; }
+		set { m_SwapLevel = value; }
+	}
 
 	private int m_DeletedAbilities = 0;
 	
@@ -153,7 +160,8 @@ public class AbilityMenu : MonoBehaviour
 			//Hide ourselves
 			SetActive(false);
 
-			LevelSwapper.Instance.SwapLevel();
+			if (SwapLevel) LevelSwapper.Instance.SwapLevel();
+			SwapLevel = true;
 			m_DeletedAbilities = 0;
 		}
 	}
