@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
 	[SerializeField] public  Gun m_GrenadeLauncher = null;
 	
 	[SerializeField] private Transform m_GroundChecker = null;
+	[SerializeField] private Transform m_FrontCheck = null;
 
 	//-----------------
 	// Accessors
@@ -219,10 +220,26 @@ public class Player : MonoBehaviour
 			float horizInput = Input.GetAxis("Horizontal");
 			if (Mathf.Abs(horizInput) > 0.0f) m_HorizDirection = Mathf.Sign(horizInput);
 
-			//Running
-			if(Mathf.Abs(rigidbody2D.velocity.x) < m_MaxSpeed || Mathf.Sign(horizInput) != Mathf.Sign(rigidbody2D.velocity.x))
+			//Stop sticking to walls
+			bool isSticking = false;
+			Collider2D[] frontHits = Physics2D.OverlapPointAll(m_FrontCheck.position);
+			foreach(Collider2D frontColliding in frontHits)
 			{
-				rigidbody2D.AddForce(Vector2.right * horizInput * m_Acceleration);
+				// If any of the colliders is an Obstacle...
+				if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == 8)
+				{
+					isSticking = true;
+					break;
+				}
+			}
+
+			//Running
+			if (!isSticking)
+			{
+				if(Mathf.Abs(rigidbody2D.velocity.x) < m_MaxSpeed || Mathf.Sign(horizInput) != Mathf.Sign(rigidbody2D.velocity.x))
+				{
+					rigidbody2D.AddForce(Vector2.right * horizInput * m_Acceleration);
+				}
 			}
 
 			//Clamp
@@ -243,7 +260,7 @@ public class Player : MonoBehaviour
 			}
 		}
 
-		//Keep ourselves within the screen bounts
+		//Keep ourselves within the screen bounds
 		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
 		
 		if(pos.x < 0.0f || pos.x > 1.0f)

@@ -32,7 +32,8 @@ public class Enemy : MonoBehaviour
 		rigidbody2D.velocity = new Vector2(transform.localScale.x * moveSpeed, rigidbody2D.velocity.y);
 
 		// Create an array of all the colliders in front of the enemy.
-		Collider2D[] frontHits = Physics2D.OverlapPointAll(frontCheck.position, 1);	
+		Collider2D[] frontHits = Physics2D.OverlapPointAll(frontCheck.position);
+
 		// Check each of the colliders.
 		foreach(Collider2D frontColliding in frontHits)
 		{
@@ -88,7 +89,7 @@ public class Enemy : MonoBehaviour
 				lastHitTime = Time.time;
 
 				//Let player take damage
-				collidingObject.gameObject.GetComponent<Health>().TakeDamage(enemyDamage);
+				collidingObject.gameObject.GetComponent<Player>().TakeDamage(enemyDamage);
 
 				//Make player jump from damage
 				Vector3 hurtVector = collidingObject.transform.position - this.transform.position + Vector3.up * 5f;
