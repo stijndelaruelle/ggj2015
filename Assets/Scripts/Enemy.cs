@@ -6,16 +6,25 @@ public class Enemy : MonoBehaviour
 	public float moveSpeed = 2f;
 	public int enemyDamage = 1;
 	public float repeatDamageTime = 2f;
-	public float dashSpeedThreshold = 10f;
 	public float killTime = .5f;
 	public Transform frontCheck;
-	public Transform topCheck;
-
-	//private SpriteRenderer enemySprite;
-	private float lastHitTime;
-	public bool canDamage = true;
+	
 	private bool animationOverride = false;
 	private Animator spriteAnim;
+
+	[SerializeField]
+	private float m_SightRadius = 0.0f;
+
+	[SerializeField]
+	private float m_AttackCooldownTimer = 0.0f;
+
+	[SerializeField]
+	private float m_RandomPositionTimer = 0.0f;
+
+	private Transform m_TargetPlayer;
+	private Vector3 m_TargetPosition;
+	private bool m_CanAttack = true;
+	private bool m_CanChooseRandomPosition = true;
 
 	// Use this for initialization
 	void Start () 
@@ -27,9 +36,33 @@ public class Enemy : MonoBehaviour
 	void FixedUpdate () 
 	{
 		SetAnimation();
+		FindTarget();
 
 		//Move the enemy
-		rigidbody2D.velocity = new Vector2(transform.localScale.x * moveSpeed, rigidbody2D.velocity.y);
+		if (m_TargetPlayer == null && m_TargetPosition == Vector3.zero)
+		{
+			rigidbody2D.velocity = new Vector2(0.0f, rigidbody2D.velocity.y);
+		}
+		else
+		{
+			Vector3 target = m_TargetPosition;
+			if (m_TargetPlayer != null) target = m_TargetPlayer.position;
+
+			Vector3 dir = transform.position - target;
+			rigidbody2D.velocity = new Vector2(-Mathf.Sign(dir.x) * moveSpeed, rigidbody2D.velocity.y);
+
+			if (dir.magnitude > 0.5f)
+			{
+				Vector3 enemyScale = transform.localScale;
+				enemyScale.x = -Mathf.Sign(dir.x);
+				transform.localScale = enemyScale;
+			}
+			else
+			{
+				m_TargetPlayer = null;
+				m_TargetPosition = Vector3.zero;
+			}
+		}
 
 		// Create an array of all the colliders in front of the enemy.
 		Collider2D[] frontHits = Physics2D.OverlapPointAll(frontCheck.position);
@@ -40,58 +73,35 @@ public class Enemy : MonoBehaviour
 			// If any of the colliders is an Obstacle...
 			if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == 8)
 			{
-				// ... Flip the enemy and stop checking the other colliders.
-				Flip ();
 				break;
 			}
 		}
-
-		Vector2 startPos = new Vector2(transform.position.x + transform.localScale.x, transform.position.y);
-		Vector2 endPos = new Vector2(startPos.x, startPos.y - transform.localScale.y);
-
-		RaycastHit2D bottomCheck = Physics2D.Linecast(startPos, endPos);
-
-		if(!bottomCheck && Time.time > lastHitTime + repeatDamageTime)
-			Flip ();
 	}
 
 	void OnCollisionEnter2D(Collision2D collidingObject)
 	{
 		if(collidingObject.gameObject.tag == "Player")
 		{
-			if(!collidingObject.gameObject.GetComponent<Player>().m_CanDash && 
-			   Mathf.Abs (collidingObject.rigidbody.velocity.x) > dashSpeedThreshold)
+			if(collidingObject.gameObject.GetComponent<Player>().m_IsDashing)
 			{
 				Vector2 throwVector = transform.position - collidingObject.transform.position + Vector3.up * .1f;
 				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 50);
 			
-				canDamage = false;
 				collider2D.enabled = false;
+				StartCoroutine(AttackCooldownRoutine());
 
 				KillCountdown();
 			}
-			else if(canDamage && Time.time > lastHitTime + repeatDamageTime)
+			else
 			{
-
-				lastHitTime = Time.time;
-
 				//Let player take damage
 				collidingObject.gameObject.GetComponent<Player>().TakeDamage(enemyDamage);
 
 				//Make player jump from damage
 				Vector3 hurtVector = collidingObject.transform.position - this.transform.position + Vector3.up * 5f;
 				collidingObject.gameObject.rigidbody2D.AddForce(hurtVector * 30);
-				
-				Flip ();
 			}
 		}
-	}
-
-	void Flip()
-	{
-		Vector3 enemyScale = transform.localScale;
-		enemyScale.x *= -1;
-		transform.localScale = enemyScale;
 	}
 
 	public void KillCountdown()
@@ -117,6 +127,61 @@ public class Enemy : MonoBehaviour
 	void Die()
 	{
 		Destroy(gameObject);
+	}
+
+	private void FindTarget()
+	{
+		if (m_CanAttack)
+		{
+			Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, m_SightRadius);
+			
+			m_TargetPlayer = null;
+			for(int i = 0 ; i < objectsInRange.Length; i++)
+			{
+				if(objectsInRange[i].tag == "Player")
+				{
+					m_TargetPlayer = objectsInRange[i].gameObject.transform;
+					StartCoroutine(AttackCooldownRoutine());
+				}
+			}
+		}
+
+		//Ga naar random positie
+		if (m_CanChooseRandomPosition && m_TargetPlayer == null)
+		{
+			float offset = Random.Range (-5.0f, 5.0f);
+			m_TargetPosition = new Vector3(transform.position.x + offset, transform.position.y, transform.position.z);
+
+			StartCoroutine(RandomPositionCooldownRoutine());
+		}
+	}
+	
+	private IEnumerator AttackCooldownRoutine()
+	{
+		m_CanAttack = false;
+		float timer = m_AttackCooldownTimer;
+		
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+		
+		m_CanAttack = true;
+	}
+
+	private IEnumerator RandomPositionCooldownRoutine()
+	{
+		m_CanChooseRandomPosition = false;
+		float timer = Random.Range(m_RandomPositionTimer - 1.0f, m_RandomPositionTimer + 1.0f);
+		
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+		
+		m_CanChooseRandomPosition = true;
 	}
 
 	void SetAnimation()
