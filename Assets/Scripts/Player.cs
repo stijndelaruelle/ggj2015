@@ -66,7 +66,7 @@ public class Player : MonoBehaviour
 	}
 
 	private bool m_IsJumping = false;
-	private bool m_IsDashing = false;
+	public bool m_IsDashing = false;
 	public bool m_IsAutoWalking = false;
 	public  bool m_CanDash = true;
 	private int m_CurrentJump = 0;
@@ -129,6 +129,7 @@ public class Player : MonoBehaviour
 		m_CanDash = true;
 		m_IsDead = false;
 		m_CurrentJump = 0;
+		gameObject.collider2D.enabled = true;
 
 		m_HorizDirection = 1.0f;
 
@@ -141,11 +142,15 @@ public class Player : MonoBehaviour
 		{
 			transform.position = spawn.transform.position;
 		}
+
+	m_IsDead = false;
 	}
 
 	// Update is called once per frame
 	private void Update ()
 	{
+		if (m_IsDead) return;
+
 		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
 
 		HandleHealth();
@@ -175,7 +180,6 @@ public class Player : MonoBehaviour
 	//We use FixedUpdate for any physics related stuff
 	private void FixedUpdate()
 	{
-		CheckDeath();	//Check if player needs to have it's death animation played
 		if (m_IsDead) return;
 
 		HandleMovement();
@@ -188,6 +192,10 @@ public class Player : MonoBehaviour
 		//Health
 		if(m_Health <= 0)
 		{
+			m_IsDead = true;
+			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
+			gameObject.collider2D.enabled = false;
+
 			Respawn();
 			LevelSwapper.Instance.NextLevel = "level0";
 			StartCoroutine(WaitForFadeRoutine(1.0f));
@@ -393,15 +401,6 @@ public class Player : MonoBehaviour
 	{
 		rigidbody2D.velocity = new Vector3(0.0f, 0.0f, 0.0f);
 		transform.position = position;
-	}
-
-	void CheckDeath()
-	{
-		if(m_Health <= 0)
-		{
-			m_IsDead = true;
-			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
-		}
 	}
 
 	private IEnumerator PlayAnimationRoutine(int ID, float animationLength)
