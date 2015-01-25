@@ -53,21 +53,6 @@ public class Enemy : MonoBehaviour
 
 		if(!bottomCheck && Time.time > lastHitTime + repeatDamageTime)
 			Flip ();
-
-		// Create an array of all the colliders in front of the enemy.
-		Collider2D[] topHits = Physics2D.OverlapPointAll(topCheck.position);	
-		// Check each of the colliders.
-		foreach(Collider2D topColliding in topHits)
-		{
-			// If any of the colliders is an Obstacle...
-			if(topColliding.tag == "Player")
-			{
-				topColliding.gameObject.rigidbody2D.AddForce(Vector2.up * Mathf.Abs(topColliding.rigidbody2D.velocity.x) * 100);
-
-				Die();
-				break;
-			}
-		}
 	}
 
 	void OnCollisionEnter2D(Collision2D collidingObject)
