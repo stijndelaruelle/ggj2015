@@ -226,7 +226,7 @@ public class Player : MonoBehaviour
 		if (m_IsAutoWalking) return;
 
 		//Dashing
-		if(m_CanDash && Input.GetButtonDown("Fire1"))
+		if(m_CanDash && Input.GetButtonDown("Dash"))
 		{
 			StartCoroutine(DashRoutine());
 
@@ -289,7 +289,9 @@ public class Player : MonoBehaviour
 
 	private void HandleShooting()
 	{
-		if((m_GatlingGun != null) && Input.GetButton("Fire2"))
+		if (m_IsAutoWalking) return;
+
+		if((m_GatlingGun != null) && Input.GetButton("Weapon1"))
 		{
 			m_GatlingGun.Fire(m_HorizDirection);
 
@@ -297,7 +299,7 @@ public class Player : MonoBehaviour
 			StartCoroutine(PlayAnimationRoutine(3, .167f));
 		}
 
-		if ((m_GrenadeLauncher != null) && Input.GetButtonUp("Fire3"))
+		if ((m_GrenadeLauncher != null) && Input.GetButtonUp("Weapon2"))
 		{
 			//Play Animation
 			if(m_GrenadeLauncher.m_CanShoot)
