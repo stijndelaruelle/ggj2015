@@ -304,7 +304,14 @@ public class Player : MonoBehaviour
 
 			//Play Animation
 			StartCoroutine(PlayAnimationRoutine(3, .167f));
+
+			//Play Sound
+			if(!audio.isPlaying && Input.GetButton("Weapon1"))
+				audio.Play();
+
 		}
+		else if(audio.isPlaying)
+			audio.Stop();
 
 		if ((m_GrenadeLauncher != null) && Input.GetButtonUp("Weapon2"))
 		{
