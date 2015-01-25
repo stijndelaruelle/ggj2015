@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class AbilityMenu : MonoBehaviour
 {
@@ -38,13 +39,14 @@ public class AbilityMenu : MonoBehaviour
 	private Player m_Player = null;
 
 	[SerializeField]
-	private Button m_Button = null;
+	private List<Button> m_Buttons = null;
 
+	private int m_DeletedAbilities = 0;
+	
 	void Awake()
 	{
 		if(m_Instance == null)
 		{
-
 			//If I am the first instance, make me the Singleton
 			m_Instance = this;
 			DontDestroyOnLoad(this);
@@ -57,37 +59,44 @@ public class AbilityMenu : MonoBehaviour
 				Destroy(this.gameObject);
 		}
 
+		m_Buttons = new List<Button>();
+		for (int i = 0; i < transform.childCount; ++i)
+		{
+			Button btn = transform.GetChild(i).gameObject.GetComponent<Button>();
+			if (btn != null) m_Buttons.Add(btn);
+		}
+
 		SetActive(false);
 	}
 
 	public void FillMenu()
 	{
-		//Clear all our buttons
-		for(int i = transform.childCount - 1; i >= 0; --i)
+		foreach(Button btn in m_Buttons)
 		{
-			Destroy(transform.GetChild(i).gameObject);
+			btn.interactable = false;
 		}
 
 		//Movement
-		if (m_Player.m_Acceleration > 0)  { AddButton((int)Ability.Run, "Run"); }
-		if (m_Player.m_DashDuration > 0 ) { AddButton((int)Ability.Dash, "Dash"); }
+		if (m_Player.m_Acceleration > 0)  { m_Buttons[0].interactable = true; }
+		if (m_Player.m_DashDuration > 0 ) { m_Buttons[1].interactable = true; }
 
 		//Jumping
-		if (m_Player.m_JumpAmount > 0) { AddButton((int)Ability.Jump, "Jump"); }
-		if (m_Player.m_JumpAmount > 1) { AddButton((int)Ability.DoubleJump, "Double Jump"); }
+		if (m_Player.m_JumpAmount > 0) { m_Buttons[2].interactable = true; }
+		if (m_Player.m_JumpAmount > 1) { m_Buttons[3].interactable = true; }
 
 		//Health
-		if (m_Player.MaxHealth > 1)       	{ AddButton((int)Ability.Health, "Health"); }
-		if (m_Player.m_HealthRegenRate > 0) { AddButton((int)Ability.HealthRegen, "health regen"); }
+		if (m_Player.MaxHealth > 1)       	{ m_Buttons[4].interactable = true; }
+		if (m_Player.m_HealthRegenRate > 0) { m_Buttons[5].interactable = true; }
 
 		//Weapons
-		if (m_Player.m_GatlingGun != null)  	 { AddButton((int)Ability.GatlingGun, "Gatling gun"); }
-		if (m_Player.m_GrenadeLauncher != null ) { AddButton((int)Ability.GrenadeLauncher, "Grenade launcher"); }
+		if (m_Player.m_GatlingGun != null)  	 { m_Buttons[6].interactable = true; }
+		if (m_Player.m_GrenadeLauncher != null ) {m_Buttons[7].interactable = true; }
 	}
 	
 	public void RemoveAbility(int abilityID)
 	{
 		Ability ability = (Ability)abilityID;
+		m_Buttons[abilityID].interactable = false;
 
 		//We remove an ability
 		switch (ability)
@@ -137,24 +146,16 @@ public class AbilityMenu : MonoBehaviour
 				break;
 		}
 
-		//Hide ourselves
-		SetActive(false);
-
 		//We move on to the next level
-		LevelSwapper.Instance.SwapLevel();
-	}
+		++m_DeletedAbilities;
+		if (m_DeletedAbilities == 2)
+		{
+			//Hide ourselves
+			SetActive(false);
 
-	private void AddButton(int abilityID, string text)
-	{
-		Button button = GameObject.Instantiate(m_Button) as Button;
-		
-		RectTransform btnTransform = button.gameObject.GetComponent<RectTransform>();
-		
-		btnTransform.SetParent(transform);
-		btnTransform.GetChild(0).GetComponent<Text>().text = text;
-		btnTransform.sizeDelta = new Vector2(1.0f, 1.0f);
-		
-		button.onClick.AddListener(() => RemoveAbility(abilityID));
+			LevelSwapper.Instance.SwapLevel();
+			m_DeletedAbilities = 0;
+		}
 	}
 
 	public void SetActive(bool value)

@@ -38,7 +38,8 @@ public class Player : MonoBehaviour
 	[SerializeField] public  Gun m_GrenadeLauncher = null;
 	
 	[SerializeField] private Transform m_GroundChecker = null;
-	[SerializeField] private Transform m_FrontCheck = null;
+	[SerializeField] private Transform m_FrontCheckA = null;
+	[SerializeField] private Transform m_FrontCheckB = null;
 	[SerializeField] private bool m_IsDead;
 
 	//-----------------
@@ -65,7 +66,7 @@ public class Player : MonoBehaviour
 	}
 
 	private bool m_IsJumping = false;
-	private bool m_IsDashing = false;
+	public bool m_IsDashing = false;
 	public bool m_IsAutoWalking = false;
 	public  bool m_CanDash = true;
 	private int m_CurrentJump = 0;
@@ -128,6 +129,7 @@ public class Player : MonoBehaviour
 		m_CanDash = true;
 		m_IsDead = false;
 		m_CurrentJump = 0;
+		gameObject.collider2D.enabled = true;
 
 		m_HorizDirection = 1.0f;
 
@@ -140,11 +142,15 @@ public class Player : MonoBehaviour
 		{
 			transform.position = spawn.transform.position;
 		}
+
+	m_IsDead = false;
 	}
 
 	// Update is called once per frame
 	private void Update ()
 	{
+		if (m_IsDead) return;
+
 		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
 
 		HandleHealth();
@@ -174,7 +180,6 @@ public class Player : MonoBehaviour
 	//We use FixedUpdate for any physics related stuff
 	private void FixedUpdate()
 	{
-		CheckDeath();	//Check if player needs to have it's death animation played
 		if (m_IsDead) return;
 
 		HandleMovement();
@@ -187,17 +192,25 @@ public class Player : MonoBehaviour
 		//Health
 		if(m_Health <= 0)
 		{
+			m_IsDead = true;
+			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
+			gameObject.collider2D.enabled = false;
+
 			Respawn();
 			LevelSwapper.Instance.NextLevel = "level0";
 			StartCoroutine(WaitForFadeRoutine(1.0f));
 		}
 
 		//Regeneration
-		if (m_HealthRegenTimer <= 0.0f && m_HealthRegenRate > 0.0f)
+		if (m_HealthRegenRate > 0.0f && m_Health != m_MaxHealth)
 		{
-			m_Health += 1;
-			m_Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
-			m_HealthRegenTimer = m_HealthRegenRate;
+			m_HealthRegenTimer -= Time.deltaTime;
+			if (m_HealthRegenTimer <= 0.0f)
+			{
+				m_Health += 1;
+				Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
+				m_HealthRegenTimer = m_HealthRegenRate;
+			}
 		}
 	}
 
@@ -227,7 +240,7 @@ public class Player : MonoBehaviour
 
 			//Stop sticking to walls
 			bool isSticking = false;
-			Collider2D[] frontHits = Physics2D.OverlapPointAll(m_FrontCheck.position);
+			Collider2D[] frontHits = Physics2D.OverlapAreaAll(m_FrontCheckA.position, m_FrontCheckB.position);
 			foreach(Collider2D frontColliding in frontHits)
 			{
 				// If any of the colliders is an Obstacle...
@@ -388,15 +401,6 @@ public class Player : MonoBehaviour
 	{
 		rigidbody2D.velocity = new Vector3(0.0f, 0.0f, 0.0f);
 		transform.position = position;
-	}
-
-	void CheckDeath()
-	{
-		if(m_Health <= 0)
-		{
-			m_IsDead = true;
-			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
-		}
 	}
 
 	private IEnumerator PlayAnimationRoutine(int ID, float animationLength)
