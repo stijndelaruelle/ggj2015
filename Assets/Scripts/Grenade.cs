@@ -21,6 +21,14 @@ public class Grenade : Projectile
 		StartCoroutine(DetonateRoutine());
 	}
 
+	void Update()
+	{
+		if(Input.GetButtonDown("Fire3"))
+		{
+			Detonate();
+		}
+	}
+
 	private IEnumerator DetonateRoutine()
 	{
 		float timer = m_DetonationTime;
