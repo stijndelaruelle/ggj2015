@@ -39,8 +39,7 @@ public class Player : MonoBehaviour
 	
 	[SerializeField] private Transform m_GroundChecker = null;
 	[SerializeField] private Transform m_FrontCheck = null;
-	[SerializeField] private bool m_IsDead;
-
+	
 	//-----------------
 	// Accessors
 	//-----------------
@@ -65,10 +64,11 @@ public class Player : MonoBehaviour
 	}
 
 	private bool m_IsJumping = false;
-	private bool m_IsDashing = false;
+	public bool m_IsDashing = false;
 	public bool m_IsAutoWalking = false;
 	public  bool m_CanDash = true;
 	private int m_CurrentJump = 0;
+	private bool m_IsDead = false;
 
 	private float m_HorizDirection = 1.0f;
 	private float m_HealthRegenTimer = 0.0f;
@@ -128,7 +128,7 @@ public class Player : MonoBehaviour
 		m_CanDash = true;
 		m_IsDead = false;
 		m_CurrentJump = 0;
-
+		gameObject.collider2D.enabled = true;
 		m_HorizDirection = 1.0f;
 
 		OnHealthChanged();
@@ -143,9 +143,11 @@ public class Player : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	private void Update ()
+	private void Update()
 	{
-		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
+		if (m_IsDead) return;
+
+		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground"));
 
 		HandleHealth();
 
@@ -169,12 +171,18 @@ public class Player : MonoBehaviour
 		{
 			m_CurrentJump = 0;
 		}
+
+		//Dashing
+		if (m_CanDash && Input.GetButtonDown("Fire1"))
+		{
+			StartCoroutine(DashRoutine());
+			StartCoroutine(DashCooldownRoutine());
+		}
 	}
 
 	//We use FixedUpdate for any physics related stuff
 	private void FixedUpdate()
 	{
-		CheckDeath();	//Check if player needs to have it's death animation played
 		if (m_IsDead) return;
 
 		HandleMovement();
@@ -187,6 +195,10 @@ public class Player : MonoBehaviour
 		//Health
 		if(m_Health <= 0)
 		{
+			m_IsDead = true;
+			gameObject.collider2D.enabled = false;
+			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
+
 			Respawn();
 			LevelSwapper.Instance.NextLevel = "level0";
 			StartCoroutine(WaitForFadeRoutine(1.0f));
@@ -207,6 +219,8 @@ public class Player : MonoBehaviour
 
 	public void TakeDamage(int damage)
 	{
+		if (m_IsDead) return;
+
 		m_Health -= damage;
 		m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
 		OnHealthChanged();
@@ -216,15 +230,8 @@ public class Player : MonoBehaviour
 	{
 		if (m_IsAutoWalking) return;
 
-		//Dashing
-		if(m_CanDash && Input.GetButtonDown("Fire1"))
-		{
-			StartCoroutine(DashRoutine());
-
-			//Start cooldown
-			StartCoroutine(DashCooldownRoutine());
-		}
-		else if (!m_IsDashing)
+		//Running
+		if (!m_IsDashing)
 		{
 			float horizInput = Input.GetAxis("Horizontal");
 			if (Mathf.Abs(horizInput) > 0.0f) m_HorizDirection = Mathf.Sign(horizInput);
@@ -334,7 +341,7 @@ public class Player : MonoBehaviour
 		{
 			timer -= Time.deltaTime;
 			rigidbody2D.AddForce(Vector2.right * m_HorizDirection * m_DashAcceleration);
-			yield return new WaitForEndOfFrame();
+			yield return new WaitForFixedUpdate();
 		}
 
 		rigidbody2D.gravityScale = 3.0f;
@@ -352,7 +359,7 @@ public class Player : MonoBehaviour
 		while (timer > 0.0f)
 		{
 			timer -= Time.deltaTime;
-			yield return new WaitForEndOfFrame();
+			yield return new WaitForFixedUpdate();
 		}
 
 		m_CanDash = true;
@@ -381,7 +388,7 @@ public class Player : MonoBehaviour
 				rigidbody2D.velocity = new Vector2(Vector2.right.x * Mathf.Sign(rigidbody2D.velocity.x) * (m_MaxSpeed / 5.0f), rigidbody2D.velocity.y);
 			}
 
-			yield return new WaitForEndOfFrame();
+			yield return new WaitForFixedUpdate();
 		}
 		
 		//m_IsAutoWalking = false;
@@ -392,15 +399,6 @@ public class Player : MonoBehaviour
 	{
 		rigidbody2D.velocity = new Vector3(0.0f, 0.0f, 0.0f);
 		transform.position = position;
-	}
-
-	void CheckDeath()
-	{
-		if(m_Health <= 0)
-		{
-			m_IsDead = true;
-			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
-		}
 	}
 
 	private IEnumerator PlayAnimationRoutine(int ID, float animationLength)
@@ -430,5 +428,4 @@ public class Player : MonoBehaviour
 		
 		LevelSwapper.Instance.SwapLevel();
 	}
-
 }

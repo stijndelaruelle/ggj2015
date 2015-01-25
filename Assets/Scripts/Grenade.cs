@@ -62,7 +62,6 @@ public class Grenade : Projectile
 				}
 				else
 				{
-					bombHits[i].gameObject.GetComponent<Enemy>().canDamage = false;
 					bombHits[i].gameObject.GetComponent<Enemy>().KillCountdown();
 				}
 			}

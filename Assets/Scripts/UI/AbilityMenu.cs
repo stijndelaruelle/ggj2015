@@ -41,11 +41,12 @@ public class AbilityMenu : MonoBehaviour
 	[SerializeField]
 	private List<Button> m_Buttons = null;
 
+	private int m_DeletedAbilities = 0;
+	
 	void Awake()
 	{
 		if(m_Instance == null)
 		{
-
 			//If I am the first instance, make me the Singleton
 			m_Instance = this;
 			DontDestroyOnLoad(this);
@@ -95,6 +96,7 @@ public class AbilityMenu : MonoBehaviour
 	public void RemoveAbility(int abilityID)
 	{
 		Ability ability = (Ability)abilityID;
+		m_Buttons[abilityID].interactable = false;
 
 		//We remove an ability
 		switch (ability)
@@ -144,11 +146,16 @@ public class AbilityMenu : MonoBehaviour
 				break;
 		}
 
-		//Hide ourselves
-		SetActive(false);
-
 		//We move on to the next level
-		LevelSwapper.Instance.SwapLevel();
+		++m_DeletedAbilities;
+		if (m_DeletedAbilities == 2)
+		{
+			//Hide ourselves
+			SetActive(false);
+
+			LevelSwapper.Instance.SwapLevel();
+			m_DeletedAbilities = 0;
+		}
 	}
 
 	public void SetActive(bool value)

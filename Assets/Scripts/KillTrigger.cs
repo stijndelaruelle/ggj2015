@@ -14,8 +14,12 @@ public class KillTrigger : MonoBehaviour
 		{
 			Player player = collider.gameObject.GetComponent<Player>();
 			player.TakeDamage(1);
-			player.Teleport(m_Checkpoint.position);
-			//Respawn at the checkpoint
+
+			if (player.Health > 0)
+			{
+				//Respawn at the checkpoint
+				player.Teleport(m_Checkpoint.position);
+			}
 		}
 	}
 }
