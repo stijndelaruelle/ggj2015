@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
 
 	private bool m_IsJumping = false;
 	private bool m_IsDashing = false;
-	private bool m_IsAutoWalking = false;
+	public bool m_IsAutoWalking = false;
 	public  bool m_CanDash = true;
 	private int m_CurrentJump = 0;
 
@@ -182,7 +182,7 @@ public class Player : MonoBehaviour
 		if(m_Health <= 0)
 		{
 			Respawn();
-			LevelSwapper.Instance.NextLevel = "level1";
+			LevelSwapper.Instance.NextLevel = "level0";
 			LevelSwapper.Instance.SwapLevel();
 		}
 

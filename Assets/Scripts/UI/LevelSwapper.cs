@@ -54,8 +54,67 @@ public class LevelSwapper : MonoBehaviour
 
 	void Start()
 	{
-		NextLevel = "level1";
+		NextLevel = "level0";
 		SwapLevel(true);
+	}
+
+	private void Update()
+	{
+		if (!Debug.isDebugBuild) return;
+
+		if (Input.GetKeyDown(KeyCode.F1))
+		{
+			m_NextLevel = "level0";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F2))
+		{
+			m_NextLevel = "level1";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F3))
+		{
+			m_NextLevel = "level2";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F4))
+		{
+			m_NextLevel = "level3";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F5))
+		{
+			m_NextLevel = "level4";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F6))
+		{
+			m_NextLevel = "level5";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F7))
+		{
+			m_NextLevel = "level6";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F8))
+		{
+			m_NextLevel = "level7";
+			SwapLevel(true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F9))
+		{
+			m_NextLevel = "level8";
+			SwapLevel(true);
+		}
 	}
 
 	private void OnLevelWasLoaded()
