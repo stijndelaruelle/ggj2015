@@ -7,8 +7,13 @@ public class Enemy : MonoBehaviour
 	public int enemyDamage = 1;
 	public float repeatDamageTime = 2f;
 	public float killTime = .5f;
-	public Transform frontCheck;
-	
+
+	[SerializeField]
+	private Transform m_FrontCheck;
+
+	[SerializeField]
+	private Transform m_GroundCheck;
+
 	private bool animationOverride = false;
 	private Animator spriteAnim;
 
@@ -19,17 +24,25 @@ public class Enemy : MonoBehaviour
 	private float m_AttackCooldownTimer = 0.0f;
 
 	[SerializeField]
-	private float m_RandomPositionTimer = 0.0f;
+	private float m_MinWanderTimer = 0.0f;
+
+	[SerializeField]
+	private float m_MaxWanderTimer = 0.0f;
 
 	private Transform m_TargetPlayer;
-	private Vector3 m_TargetPosition;
-	private bool m_CanAttack = true;
-	private bool m_CanChooseRandomPosition = true;
+	private bool m_CanAttack = false;
+	
+	private float m_WanderTimer = 0.0f;
+	private bool m_IsWandering = false;
+	private bool m_CanWander = true;
 
 	// Use this for initialization
 	void Start () 
 	{
 		spriteAnim = gameObject.GetComponent<Animator>();
+
+		StartCoroutine(AttackCooldownRoutine());
+		StartCoroutine(WanderCooldownRoutine());
 	}
 	
 	// Update is called once per frame
@@ -39,14 +52,14 @@ public class Enemy : MonoBehaviour
 		FindTarget();
 
 		//Move the enemy
-		if (m_TargetPlayer == null && m_TargetPosition == Vector3.zero)
+		if (m_TargetPlayer == null && !m_IsWandering)
 		{
 			rigidbody2D.velocity = new Vector2(0.0f, rigidbody2D.velocity.y);
 		}
-		else
+
+		if (m_TargetPlayer)
 		{
-			Vector3 target = m_TargetPosition;
-			if (m_TargetPlayer != null) target = m_TargetPlayer.position;
+			Vector3 target = m_TargetPlayer.position;
 
 			Vector3 dir = transform.position - target;
 			rigidbody2D.velocity = new Vector2(-Mathf.Sign(dir.x) * moveSpeed, rigidbody2D.velocity.y);
@@ -60,12 +73,15 @@ public class Enemy : MonoBehaviour
 			else
 			{
 				m_TargetPlayer = null;
-				m_TargetPosition = Vector3.zero;
 			}
+		}
+		else if (m_IsWandering)
+		{
+			rigidbody2D.velocity = new Vector2(Mathf.Sign(transform.localScale.x) * moveSpeed, rigidbody2D.velocity.y);
 		}
 
 		// Create an array of all the colliders in front of the enemy.
-		Collider2D[] frontHits = Physics2D.OverlapPointAll(frontCheck.position);
+		Collider2D[] frontHits = Physics2D.OverlapPointAll(m_FrontCheck.position);
 
 		// Check each of the colliders.
 		foreach(Collider2D frontColliding in frontHits)
@@ -73,9 +89,39 @@ public class Enemy : MonoBehaviour
 			// If any of the colliders is an Obstacle...
 			if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == 8)
 			{
+				Flip();
+				rigidbody2D.velocity = new Vector2(0.0f, rigidbody2D.velocity.y);
 				break;
 			}
 		}
+
+		// Create an array of all the colliders in front of the enemy.
+		Collider2D[] groundHits = Physics2D.OverlapPointAll(m_GroundCheck.position);
+		
+		// Check each of the colliders.
+		bool foundGround = false;
+		foreach(Collider2D frontColliding in groundHits)
+		{
+			// If any of the colliders is an Obstacle...
+			if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == 8)
+			{
+				foundGround = true;
+				break;
+			}
+		}
+
+		if (!foundGround)
+		{
+			Flip();
+			rigidbody2D.velocity = new Vector2(0.0f, rigidbody2D.velocity.y);
+		}
+	}
+
+	private void Flip()
+	{
+		Vector3 enemyScale = transform.localScale;
+		enemyScale.x *= -1;
+		transform.localScale = enemyScale;
 	}
 
 	void OnCollisionEnter2D(Collision2D collidingObject)
@@ -146,13 +192,11 @@ public class Enemy : MonoBehaviour
 			}
 		}
 
-		//Ga naar random positie
-		if (m_CanChooseRandomPosition && m_TargetPlayer == null)
+		//Wander around a bit
+		if (!m_IsWandering && m_CanWander && m_TargetPlayer == null)
 		{
-			float offset = Random.Range (-5.0f, 5.0f);
-			m_TargetPosition = new Vector3(transform.position.x + offset, transform.position.y, transform.position.z);
-
-			StartCoroutine(RandomPositionCooldownRoutine());
+			StartCoroutine(WanderRoutine());
+			StartCoroutine(WanderCooldownRoutine());
 		}
 	}
 	
@@ -170,10 +214,28 @@ public class Enemy : MonoBehaviour
 		m_CanAttack = true;
 	}
 
-	private IEnumerator RandomPositionCooldownRoutine()
+	private IEnumerator WanderRoutine()
 	{
-		m_CanChooseRandomPosition = false;
-		float timer = Random.Range(m_RandomPositionTimer - 1.0f, m_RandomPositionTimer + 1.0f);
+		m_IsWandering = true;
+		float timer = Random.Range(m_MinWanderTimer, m_MaxWanderTimer);
+
+		//One in 2 that we change direction
+		float rand = Random.Range(0, 100);
+		if (rand > 50) Flip ();
+
+		while (timer > 0.0f)
+		{
+			timer -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+		
+		m_IsWandering = false;
+	}
+
+	private IEnumerator WanderCooldownRoutine()
+	{
+		m_CanWander = false;
+		float timer = Random.Range(m_MinWanderTimer * 3.0f, m_MaxWanderTimer * 3.0f);
 		
 		while (timer > 0.0f)
 		{
@@ -181,7 +243,7 @@ public class Enemy : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 		}
 		
-		m_CanChooseRandomPosition = true;
+		m_CanWander = true;
 	}
 
 	void SetAnimation()
