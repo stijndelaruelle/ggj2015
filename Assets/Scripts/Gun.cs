@@ -7,6 +7,9 @@ public class Gun : MonoBehaviour
 	private Projectile m_Projectile;
 
 	[SerializeField]
+	private float m_AimAngle;
+
+	[SerializeField]
 	private float m_SpreadAngle;
 
 	[SerializeField]
@@ -22,12 +25,17 @@ public class Gun : MonoBehaviour
 	private float m_ScreenShakeLength;
 
 	public bool m_CanShoot = true;		//Made public to use for animator on player
+	public bool isGrenade = false;
 
 	public void Fire(float horizDirection)
 	{
 		if (!m_Projectile || !m_CanShoot) return;
 
 		Quaternion angle = Quaternion.Euler(new Vector3(0.0f, 0.0f, -horizDirection * 90.0f));
+
+		//Add aim angle
+		Quaternion quat = Quaternion.Euler(new Vector3(0.0f, 0.0f, m_AimAngle));
+		angle *= quat;
 
 		//Add random spread
 		float randAngle = Random.Range(-m_SpreadAngle, m_SpreadAngle);
@@ -36,7 +44,14 @@ public class Gun : MonoBehaviour
 		angle *= spread;
 
 		//Instantiate the bullet
-		Instantiate(m_Projectile, transform.position, angle);
+		Rigidbody2D bullet;
+		bullet = Instantiate(m_Projectile, transform.position, angle) as Rigidbody2D;
+//		if(isGrenade)
+//		{
+//			Vector2 bulletAngle = angle * Vector2.right;
+//			Debug.Log(bullet);
+//			bullet.rigidbody2D.AddForce(bulletAngle * 150);
+//		}
 		StartCoroutine(ReloadCoroutine());
 
 		//Add recoil for the player
