@@ -31,8 +31,7 @@ public class Enemy : MonoBehaviour
 
 	private Transform m_TargetPlayer;
 	private bool m_CanAttack = false;
-	
-	private float m_WanderTimer = 0.0f;
+
 	private bool m_IsWandering = false;
 	private bool m_CanWander = true;
 

@@ -23,7 +23,7 @@ public class Grenade : Projectile
 
 	void Update()
 	{
-		if(Input.GetButtonDown("Fire3"))
+		if(Input.GetButtonDown("Weapon2"))
 		{
 			Detonate();
 		}

@@ -15,6 +15,13 @@ public class FollowCamera : MonoBehaviour
 	private float m_TopBorder;
 	private float m_BottomBorder;
 
+	private Vector3 m_CachedPosition;
+
+	private void Awake()
+	{
+		m_CachedPosition = transform.position;
+	}
+
 	private void OnLevelWasLoaded()
 	{
 		GameObject bottomLeft = GameObject.Find("BottomLeft");
@@ -37,6 +44,8 @@ public class FollowCamera : MonoBehaviour
 		m_BottomBorder = bottomLeft.transform.position.y;
 		m_RightBorder = topRight.transform.position.x;
 		m_TopBorder = topRight.transform.position.y;
+
+		transform.position = m_CachedPosition;
 	}
 
 	void Update()
