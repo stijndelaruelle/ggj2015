@@ -36,7 +36,7 @@ public class LastLevelScriptedEvent : MonoBehaviour
 			Camera.main.GetComponent<Screenshake>().ScreenShake(m_Phases[phase].m_Strength, timer);
 		}
 
-		if (phase == 3)
+		if (phase == 1)
 		{
 			m_Spawner.SetActive(true);
 		}
@@ -48,5 +48,14 @@ public class LastLevelScriptedEvent : MonoBehaviour
 		}
 
 		if (phase != (m_Phases.Count - 1)) StartPhase(++phase);
+	}
+
+	private void OnTriggerEnter2D(Collider2D collider)
+	{
+		if (collider.tag == "Player")
+		{
+			m_Spawner.SetActive(false);
+			m_Spawner.GetComponent<Spawner>().StopSpawning();
+		}
 	}
 }

@@ -86,6 +86,8 @@ public class Player : MonoBehaviour
 	//Animation
 	private bool animationOverride = false;
 	private Animator spriteAnim;
+	[SerializeField] private SpriteRenderer spriteRen;
+	private bool invincible = false;
 
 	//-----------------
 	// Functions
@@ -129,7 +131,7 @@ public class Player : MonoBehaviour
 		m_CanDash = true;
 		m_IsDead = false;
 		m_CurrentJump = 0;
-		gameObject.collider2D.enabled = true;
+		gameObject.layer = 9;
 
 		m_HorizDirection = 1.0f;
 
@@ -194,7 +196,7 @@ public class Player : MonoBehaviour
 		{
 			m_IsDead = true;
 			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
-			gameObject.collider2D.enabled = false;
+			gameObject.layer = 15;
 
 			Respawn();
 			LevelSwapper.Instance.NextLevel = "level0";
@@ -216,9 +218,14 @@ public class Player : MonoBehaviour
 
 	public void TakeDamage(int damage)
 	{
-		m_Health -= damage;
-		m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
-		OnHealthChanged();
+		if(!invincible)
+		{
+			m_Health -= damage;
+			m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
+
+			StartCoroutine(InvincibleBlinkingRoutine());
+			OnHealthChanged();
+		}
 	}
 
 	private void HandleMovement()
@@ -433,4 +440,28 @@ public class Player : MonoBehaviour
 		LevelSwapper.Instance.SwapLevel();
 	}
 
+	private IEnumerator InvincibleBlinkingRoutine()
+	{
+		//Flash flash Invincibility!
+		invincible = true;
+		gameObject.layer = 15;		//Put the player on a layer that doesn't collide with enemies
+		
+		spriteRen.enabled = false;
+		yield return new WaitForSeconds(.1f);
+		spriteRen.enabled = true;
+		spriteRen.material.color = Color.red;
+		yield return new WaitForSeconds(.1f);
+		spriteRen.enabled = false;
+		yield return new WaitForSeconds(.2f);
+		spriteRen.material.color = Color.white;
+		spriteRen.enabled = true;
+		yield return new WaitForSeconds(.2f);
+		spriteRen.enabled = false;
+		yield return new WaitForSeconds(.2f);
+		spriteRen.enabled = true;
+		yield return new WaitForSeconds(.4f);
+		
+		invincible = false;
+		gameObject.layer = 9;		//Put the player back on the player layer...
+	}
 }

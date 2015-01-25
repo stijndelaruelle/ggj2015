@@ -14,8 +14,8 @@ public class Enemy : MonoBehaviour
 	[SerializeField]
 	private Transform m_GroundCheck;
 
-	private bool animationOverride = false;
-	private Animator spriteAnim;
+	protected bool animationOverride = false;
+	protected Animator spriteAnim;
 
 	[SerializeField]
 	private float m_SightRadius = 0.0f;
@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField]
 	private float m_MaxWanderTimer = 0.0f;
 
-	private Transform m_TargetPlayer;
+	protected Transform m_TargetPlayer;
 	private bool m_CanAttack = false;
 
 	private bool m_IsWandering = false;
