@@ -60,13 +60,13 @@ public class Grenade : Projectile
 			if(bombHits[i].gameObject.layer == 12 || bombHits[i].tag == "Player")
 			{
 				Vector2 throwVector = bombHits[i].transform.position - this.transform.position + Vector3.up * 5f;
-
-				bombHits[i].gameObject.rigidbody2D.AddForce(throwVector * m_ThrowForce);
+                Vector2 forceVector = throwVector * m_ThrowForce;
 
 				if(bombHits[i].tag == "Player")
 				{
 					//Do damage to player
 					bombHits[i].gameObject.GetComponent<Player>().TakeDamage(m_Damage);
+                    bombHits[i].gameObject.GetComponent<Player>().AddExternalForce(forceVector.x, forceVector.y);
 				}
 				else
 				{

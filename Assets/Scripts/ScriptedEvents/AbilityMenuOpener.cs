@@ -7,7 +7,7 @@ public class AbilityMenuOpener : MonoBehaviour
 	{
 		if (collider.tag == "Player")
 		{
-			collider.gameObject.GetComponent<Player>().m_IsAutoWalking = true;
+			//collider.gameObject.GetComponent<Player>().m_IsAutoWalking = true;
 			AbilityMenu.Instance.SwapLevel = false;
 			AbilityMenu.Instance.gameObject.SetActive(true);
 		}

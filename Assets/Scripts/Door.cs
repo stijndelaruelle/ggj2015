@@ -14,7 +14,7 @@ public class Door : MonoBehaviour
 		if (other.tag == "Player")
 		{
 			//Make the player auto walk
-			other.gameObject.GetComponent<Player>().AutoWalk(1.0f);
+			//other.gameObject.GetComponent<Player>().AutoWalk(1.0f);
 
 			LevelSwapper.Instance.NextLevel = m_LevelName;
 

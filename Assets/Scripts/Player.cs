@@ -1,8 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(CharacterController2D))]
 public class Player : MonoBehaviour
 {
+    //TODO STIJN
+    //-Change dash functionality
+    //-Change npc movement
+    //-fix level overgang
+    //-Variable jump height
+    //-fix death sequence
+
 	//-----------------
 	// Events
 	//-----------------
@@ -13,69 +21,70 @@ public class Player : MonoBehaviour
 	//-----------------
 	// Datamembers
 	//-----------------
+    private CharacterController2D m_Controller;
+    private Vector2 m_ExternalForce;
 
-	//Run
-	[SerializeField] public  float m_Acceleration = 0.0f;
-	[SerializeField] private float m_MaxSpeed = 0.0f;
+    //Running
+    [SerializeField] private float m_Gravity = -25f;
+    [SerializeField] public  float m_RunSpeed = 8f;
+    [SerializeField] private float m_GroundDamping = 20f; // how fast do we change direction? higher means faster
+                     private float m_HorizDirection = 1.0f;
+                     private bool m_IsAutoWalking = false;
 
-	//Dash
-	[SerializeField] private float m_DashAcceleration = 0.0f;
+    //Jumping    
+    [SerializeField] private float m_JumpHeight = 3f;
+    [SerializeField] private float m_InAirDamping = 5f;
+    [SerializeField] public  int   m_JumpAmount = 0;
+                     private int   m_CurrentJump = 0;
+
+	//Dashing
+	[SerializeField] private float m_DashSpeed = 0.0f;
 	[SerializeField] public  float m_DashDuration = 0.0f;
 	[SerializeField] private float m_DashCooldown = 0.0f;
+                     private bool  m_IsDashing = false;
+                     private bool  m_CanDash = true;
 
-	//Jump
-	[SerializeField] private float m_JumpAcceleration = 0.0f;
-	[SerializeField] private float m_MaxJumpSpeed = 0.0f;
-	[SerializeField] public  int m_JumpAmount = 0;
+	//Health(-ing)
+	[SerializeField] private int   m_Health = 0;
+	[SerializeField] private int   m_MaxHealth = 0;
+	[SerializeField] public  float m_HealthRegenRate = 0; //Time in seconds for a heart to refil
+                     private bool  m_IsInvincible = false;
+                     private float m_HealthRegenTimer = 0.0f;
 
-	//Health
-	[SerializeField] private int m_Health = 0;
-	[SerializeField] private int m_MaxHealth = 0;
-	[SerializeField] public float m_HealthRegenRate = 0; //Time in seconds for a heart to refil
+    public int Health
+    {
+        get { return m_Health; }
+        set
+        {
+            m_Health = value;
+            if (OnHealthChanged != null) OnHealthChanged();
+        }
+    }
+    public int MaxHealth
+    {
+        get { return m_MaxHealth; }
+        set
+        {
+            m_MaxHealth = value;
+            if (OnMaxHealthChanged != null) OnMaxHealthChanged();
+        }
+    }
+    private bool IsDead
+    {
+        get { return m_Health <= 0; }
+    }
 
 	//Weapons
 	[SerializeField] public  Gun m_GatlingGun = null;
 	[SerializeField] public  Gun m_GrenadeLauncher = null;
-	
-	[SerializeField] private Transform m_GroundChecker = null;
-	[SerializeField] private Transform m_FrontCheckA = null;
-	[SerializeField] private Transform m_FrontCheckB = null;
-	[SerializeField] private bool m_IsDead;
 
-	//-----------------
-	// Accessors
-	//-----------------
-	public int Health
-	{
-		get { return m_Health; }
-		set
-		{
-			m_Health = value;
-			if (OnHealthChanged != null) OnHealthChanged();
-		}
-	}
-
-	public int MaxHealth
-	{
-		get { return m_MaxHealth; }
-		set
-		{
-			m_MaxHealth = value;
-			if (OnMaxHealthChanged != null) OnMaxHealthChanged();
-		}
-	}
-
-	private bool m_IsJumping = false;
-	public bool m_IsDashing = false;
-	public bool m_IsAutoWalking = false;
-	public  bool m_CanDash = true;
-	private int m_CurrentJump = 0;
-
-	private float m_HorizDirection = 1.0f;
-	private float m_HealthRegenTimer = 0.0f;
+    //Animation
+    private bool m_AnimationOverride = false;
+    private Animator m_SpriteAnimation = null;
+    private SpriteRenderer m_SpriteRenderer = null;
 
 	//Cashed values, in case we respawn
-	private float m_CachedAcceleration = 0.0f;
+	private float m_CachedRunSpeed = 0.0f;
 	private float m_CachedDashDuration = 0.0f;
 	private int   m_CachedJumpAmount = 0;
 	private int   m_CachedMaxHealth = 0;
@@ -83,18 +92,20 @@ public class Player : MonoBehaviour
 	private Gun   m_CachedGatlingGun = null;
 	private Gun   m_CachedGrenadeLauncher = null;
 
-	//Animation
-	private bool animationOverride = false;
-	private Animator spriteAnim;
-	[SerializeField] private SpriteRenderer spriteRen;
-	private bool invincible = false;
-
-	//-----------------
-	// Functions
-	//-----------------
+    //-------------------
+    // Private Functions
+    //-------------------
 	private void Awake()
 	{
-		m_CachedAcceleration    = m_Acceleration;
+        m_Controller = GetComponent<CharacterController2D>();
+        m_ExternalForce = new Vector2();
+
+        // listen to some events for illustration purposes
+        //_controller.onControllerCollidedEvent += onControllerCollider;
+        //_controller.onTriggerEnterEvent += onTriggerEnterEvent;
+        //_controller.onTriggerExitEvent += onTriggerExitEvent;
+
+        m_CachedRunSpeed        = m_RunSpeed;
 		m_CachedDashDuration    = m_DashDuration;
 		m_CachedJumpAmount      = m_JumpAmount;
 		m_CachedMaxHealth       = m_MaxHealth;
@@ -106,12 +117,13 @@ public class Player : MonoBehaviour
 		m_HealthRegenTimer = m_HealthRegenRate;
 
 		//Animator Reference
-		spriteAnim = gameObject.GetComponent<Animator>();
+		m_SpriteAnimation = gameObject.GetComponent<Animator>();
+        m_SpriteRenderer = gameObject.GetComponent<SpriteRenderer>();
 	}
 
 	private void Respawn()
 	{
-		m_Acceleration    = m_CachedAcceleration;
+        m_RunSpeed        = m_CachedRunSpeed;
 		m_DashDuration    = m_CachedDashDuration;
 		m_JumpAmount      = m_CachedJumpAmount;
 		m_MaxHealth       = m_CachedMaxHealth;
@@ -125,11 +137,10 @@ public class Player : MonoBehaviour
 
 	private void OnLevelWasLoaded()
 	{
-		m_IsJumping = false;
 		m_IsDashing = false;
 		m_IsAutoWalking = false;
+
 		m_CanDash = true;
-		m_IsDead = false;
 		m_CurrentJump = 0;
 		gameObject.layer = 9;
 
@@ -144,164 +155,79 @@ public class Player : MonoBehaviour
 		{
 			transform.position = spawn.transform.position;
 		}
-
-	m_IsDead = false;
 	}
 
 	// Update is called once per frame
 	private void Update ()
 	{
-		if (m_IsDead) return;
-
-		bool isOnGround = Physics2D.Linecast(transform.position, m_GroundChecker.position, 1 << LayerMask.NameToLayer("Ground")); 
+		if (IsDead) return;
 
 		HandleHealth();
-
-		//Start jumping
-		if(Input.GetButtonDown("Jump") && m_JumpAmount > 0)
-		{
-			++m_CurrentJump;
-			if (isOnGround || m_CurrentJump < m_JumpAmount)
-			{
-				m_IsJumping = true;
-			}
-		}
-
-		//Stop jumping
-		if (Input.GetButtonUp("Jump"))
-		{
-			m_IsJumping = false;
-		}
-
-		if (isOnGround)
-		{
-			m_CurrentJump = 0;
-		}
-
-		if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			m_Health = 0;
-		}
-	}
-
-	//We use FixedUpdate for any physics related stuff
-	private void FixedUpdate()
-	{
-		if (m_IsDead) return;
-
-		HandleMovement();
-		HandleShooting();
-		HandleAnimations();
-	}
-
-	private void HandleHealth()
-	{
-		//Health
-		if(m_Health <= 0)
-		{
-			m_IsDead = true;
-			StartCoroutine(PlayAnimationRoutine(5, 2.0f));
-			gameObject.layer = 15;
-
-			Respawn();
-			LevelSwapper.Instance.NextLevel = "level0";
-			StartCoroutine(WaitForFadeRoutine(1.0f));
-		}
-
-		//Regeneration
-		if (m_HealthRegenRate > 0.0f && m_Health != m_MaxHealth)
-		{
-			m_HealthRegenTimer -= Time.deltaTime;
-			if (m_HealthRegenTimer <= 0.0f)
-			{
-				m_Health += 1;
-				Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
-				m_HealthRegenTimer = m_HealthRegenRate;
-			}
-		}
-	}
-
-	public void TakeDamage(int damage)
-	{
-		if(!invincible)
-		{
-			m_Health -= damage;
-			m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
-
-			StartCoroutine(InvincibleBlinkingRoutine());
-			OnHealthChanged();
-		}
+        HandleMovement();
+        HandleShooting();
 	}
 
 	private void HandleMovement()
 	{
 		if (m_IsAutoWalking) return;
+        if (m_IsDashing) return;
 
-		//Dashing
-		if(m_CanDash && Input.GetButtonDown("Dash"))
-		{
-			StartCoroutine(DashRoutine());
+        // grab our current _velocity to use as a base for all calculations
+        Vector3 velocity = m_Controller.velocity;
 
-			//Start cooldown
-			StartCoroutine(DashCooldownRoutine());
-		}
-		else if (!m_IsDashing)
-		{
-			float horizInput = Input.GetAxis("Horizontal");
-			if (Mathf.Abs(horizInput) > 0.0f) m_HorizDirection = Mathf.Sign(horizInput);
+        //Ground checks
+        if (m_Controller.isGrounded)
+        {
+            m_CurrentJump = 0; //Allow us to jump again
+            velocity.y = 0;
+        }
 
-			//Stop sticking to walls
-			bool isSticking = false;
-			Collider2D[] frontHits = Physics2D.OverlapAreaAll(m_FrontCheckA.position, m_FrontCheckB.position);
-			foreach(Collider2D frontColliding in frontHits)
-			{
-				// If any of the colliders is an Obstacle...
-				if(frontColliding.tag == "Obstacle" || frontColliding.gameObject.layer == 8)
-				{
-					isSticking = true;
-					break;
-				}
-			}
+		float horizInput = Input.GetAxis("Horizontal");
+		if (Mathf.Abs(horizInput) > 0.0f) m_HorizDirection = Mathf.Sign(horizInput);
 
-			//Running
-			if (!isSticking)
-			{
-				if(Mathf.Abs(rigidbody2D.velocity.x) < m_MaxSpeed || Mathf.Sign(horizInput) != Mathf.Sign(rigidbody2D.velocity.x))
-				{
-					rigidbody2D.AddForce(Vector2.right * horizInput * m_Acceleration);
-				}
-			}
+        //Jumping
+        if (Input.GetButtonDown("Jump") && m_JumpAmount > 0)
+        {
+            if (m_Controller.isGrounded || m_CurrentJump < m_JumpAmount)
+            {
+                velocity.y = Mathf.Sqrt(2f * m_JumpHeight * -m_Gravity);
+                ++m_CurrentJump;
+            }
+        }
 
-			//Clamp
-			if (Mathf.Abs(rigidbody2D.velocity.x) > m_MaxSpeed)
-			{
-				rigidbody2D.velocity = new Vector2(Vector2.right.x * Mathf.Sign(rigidbody2D.velocity.x) * m_MaxSpeed, rigidbody2D.velocity.y);
-			}
-		}
+        //Dashing
+        if (m_CanDash && Input.GetButton("Dash"))
+        {
+            StartCoroutine(DashRoutine());
+            StartCoroutine(DashCooldownRoutine());
+            return;
+        }
 
-		//Jumping
-		if (m_IsJumping)
-		{
-			rigidbody2D.AddForce(new Vector2(0.0f, m_JumpAcceleration));
+        //Calculate new velocity
+        var smoothedMovementFactor = m_Controller.isGrounded ? m_GroundDamping : m_InAirDamping; // how fast do we change direction?
+        velocity.x = Mathf.Lerp(velocity.x, horizInput * m_RunSpeed, Time.deltaTime * smoothedMovementFactor);
 
-			if (rigidbody2D.velocity.y > m_MaxJumpSpeed)
-			{
-				m_IsJumping = false;
-			}
-		}
+        // apply gravity before moving
+        velocity.y += m_Gravity * Time.deltaTime;
 
-		//Keep ourselves within the screen bounds
-		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
-		
-		if(pos.x < 0.0f || pos.x > 1.0f)
-		{
-			rigidbody2D.velocity = new Vector2(0.0f, rigidbody2D.velocity.y);
-		}
+        //Add External force
+        velocity.x += m_ExternalForce.x;
+        velocity.y += m_ExternalForce.y;
+
+        m_Controller.move(velocity * Time.deltaTime);
+
+        //Reset external force
+        m_ExternalForce.x = 0.0f;
+        m_ExternalForce.y = 0.0f;
+
+        //Animations
+        HandleAnimations(horizInput);
 	}
 
 	private void HandleShooting()
 	{
 		if (m_IsAutoWalking) return;
+        if (m_IsDashing) return;
 
 		if((m_GatlingGun != null) && Input.GetButton("Weapon1"))
 		{
@@ -328,7 +254,7 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	private void HandleAnimations()
+	private void HandleAnimations(float horizMovement)
 	{
 		if (m_HorizDirection != Mathf.Sign(transform.localScale.x))
 		{
@@ -337,15 +263,71 @@ public class Player : MonoBehaviour
 			transform.localScale = newScale;
 		}
 
-		if(!animationOverride)
+		if(!m_AnimationOverride)
 		{
-			if(Mathf.Abs(rigidbody2D.velocity.x) > .1f)
-				spriteAnim.SetInteger("AnimID", 2);
+            if (Mathf.Abs(horizMovement) > .1f)
+				m_SpriteAnimation.SetInteger("AnimID", 2); //Walk
 			else
-				spriteAnim.SetInteger("AnimID", 1);
+				m_SpriteAnimation.SetInteger("AnimID", 1); //Idle
 		}
 	}
 
+    private void HandleHealth()
+    {
+        //Health
+        if (m_Health <= 0)
+        {
+            StartCoroutine(PlayAnimationRoutine(5, 2.0f));
+            gameObject.layer = 15;
+
+            Respawn();
+            LevelSwapper.Instance.NextLevel = "level0";
+            StartCoroutine(WaitForFadeRoutine(1.0f));
+        }
+
+        //Regeneration
+        if (m_HealthRegenRate > 0.0f && m_Health != m_MaxHealth)
+        {
+            m_HealthRegenTimer -= Time.deltaTime;
+            if (m_HealthRegenTimer <= 0.0f)
+            {
+                m_Health += 1;
+                Health = Mathf.Clamp(m_Health, 0, m_MaxHealth);
+                m_HealthRegenTimer = m_HealthRegenRate;
+            }
+        }
+    }
+
+    //-------------------
+    // Public Functions
+    //-------------------
+    public void TakeDamage(int damage)
+    {
+        if (!m_IsInvincible)
+        {
+            m_Health -= damage;
+            m_HealthRegenTimer = m_HealthRegenRate + 2.0f; //Reset regen timer and add 2 seconds extra
+
+            StartCoroutine(InvincibilityRoutine());
+            OnHealthChanged();
+        }
+    }
+
+    public void Teleport(Vector3 position)
+    {
+        transform.position = position;
+
+    }
+
+    public void AddExternalForce(float x, float y)
+    {
+        m_ExternalForce.x += x;
+        m_ExternalForce.y += y;
+    }
+
+    //-------------------
+    // Coroutines
+    //-------------------
 	#region Dashing
 	private IEnumerator DashRoutine()
 	{
@@ -353,127 +335,71 @@ public class Player : MonoBehaviour
 		float timer = m_DashDuration;
 
 		//Play Animation
-		animationOverride = true;
-		spriteAnim.SetInteger("AnimID", 6);
-
-		//Ignore gaviry & put y velocity at 0
-		rigidbody2D.gravityScale = 0.0f;
-		rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0.0f);
+		m_AnimationOverride = true;
+		m_SpriteAnimation.SetInteger("AnimID", 6);
 
 		while (timer > 0.0f)
 		{
-			timer -= Time.deltaTime;
-			rigidbody2D.AddForce(Vector2.right * m_HorizDirection * m_DashAcceleration);
+            timer -= Time.deltaTime;
+
+            //Move in our last direction, ignoring graviry
+            Vector3 velocity = m_Controller.velocity;
+            velocity.x = m_HorizDirection * m_DashSpeed;
+            velocity.y = 0.0f;
+
+            m_Controller.move(velocity * Time.deltaTime);
+
+			//Repeat
 			yield return new WaitForEndOfFrame();
 		}
 
-		rigidbody2D.gravityScale = 3.0f;
-		m_IsDashing = false;
-
-		//Disable The Override
-		animationOverride = false;
+		m_AnimationOverride = false;
+        m_IsDashing = false;
 	}
 
 	private IEnumerator DashCooldownRoutine()
 	{
 		m_CanDash = false;
-		float timer = m_DashCooldown;
-
-		while (timer > 0.0f)
-		{
-			timer -= Time.deltaTime;
-			yield return new WaitForEndOfFrame();
-		}
-
+        yield return new WaitForSeconds(m_DashCooldown);
 		m_CanDash = true;
 	}
 	#endregion
 
-	#region AutoWalk
-	public void AutoWalk(float duration)
-	{
-		StartCoroutine(AutoWalkRoutine(duration));
-	}
-
-	private IEnumerator AutoWalkRoutine(float duration)
-	{
-		m_IsAutoWalking = true;
-		float timer = duration;
-		
-		while (timer > 0.0f)
-		{
-			timer -= Time.deltaTime;
-			rigidbody2D.AddForce(Vector2.right * Mathf.Sign(rigidbody2D.velocity.x) * (m_Acceleration / 5.0f));
-
-			//Clamp
-			if (Mathf.Abs(rigidbody2D.velocity.x) > (m_MaxSpeed / 5.0f))
-			{
-				rigidbody2D.velocity = new Vector2(Vector2.right.x * Mathf.Sign(rigidbody2D.velocity.x) * (m_MaxSpeed / 5.0f), rigidbody2D.velocity.y);
-			}
-
-			yield return new WaitForEndOfFrame();
-		}
-		
-		//m_IsAutoWalking = false;
-	}
-	#endregion
-
-	public void Teleport(Vector3 position)
-	{
-		rigidbody2D.velocity = new Vector3(0.0f, 0.0f, 0.0f);
-		transform.position = position;
-	}
-
 	private IEnumerator PlayAnimationRoutine(int ID, float animationLength)
 	{
-		float timer = animationLength;
-		animationOverride = true;
-		spriteAnim.SetInteger("AnimID", ID);
-		
-		while (timer > 0.0f)
-		{
-			timer -= Time.deltaTime;
-			yield return new WaitForEndOfFrame();
-		}
+		m_AnimationOverride = true;
+		m_SpriteAnimation.SetInteger("AnimID", ID);
 
-		animationOverride = false;
+        yield return new WaitForSeconds(animationLength);
+
+		m_AnimationOverride = false;
 	}
 
 	private IEnumerator WaitForFadeRoutine(float fadeTime)
 	{
-		float timer = fadeTime;
-		
-		while (timer > 0.0f)
-		{
-			timer -= Time.deltaTime;
-			yield return new WaitForEndOfFrame();
-		}
-		
+        yield return new WaitForSeconds(fadeTime);
 		LevelSwapper.Instance.SwapLevel();
 	}
 
-	private IEnumerator InvincibleBlinkingRoutine()
+    private IEnumerator InvincibilityRoutine()
 	{
 		//Flash flash Invincibility!
-		invincible = true;
+		m_IsInvincible = true;
 		gameObject.layer = 15;		//Put the player on a layer that doesn't collide with enemies
-		
-		spriteRen.enabled = false;
-		yield return new WaitForSeconds(.1f);
-		spriteRen.enabled = true;
-		spriteRen.material.color = Color.red;
-		yield return new WaitForSeconds(.1f);
-		spriteRen.enabled = false;
-		yield return new WaitForSeconds(.2f);
-		spriteRen.material.color = Color.white;
-		spriteRen.enabled = true;
-		yield return new WaitForSeconds(.2f);
-		spriteRen.enabled = false;
-		yield return new WaitForSeconds(.2f);
-		spriteRen.enabled = true;
+
+        m_SpriteRenderer.material.color = Color.red;
+
+        for (int i = 0; i < 15; ++i)
+        {
+            m_SpriteRenderer.enabled = !m_SpriteRenderer.enabled;
+            yield return new WaitForSeconds(.1f);
+        }
+        
+		m_SpriteRenderer.enabled = true;
+        m_SpriteRenderer.material.color = Color.white;
 		yield return new WaitForSeconds(.4f);
 		
-		invincible = false;
+		m_IsInvincible = false;
 		gameObject.layer = 9;		//Put the player back on the player layer...
 	}
 }

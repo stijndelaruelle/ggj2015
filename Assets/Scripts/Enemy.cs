@@ -127,25 +127,25 @@ public class Enemy : MonoBehaviour
 	{
 		if(collidingObject.gameObject.tag == "Player")
 		{
-			if(collidingObject.gameObject.GetComponent<Player>().m_IsDashing)
-			{
-				Vector2 throwVector = transform.position - collidingObject.transform.position + Vector3.up * .1f;
-				gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 50);
+            //if(collidingObject.gameObject.GetComponent<Player>().m_IsDashing)
+            //{
+            //    Vector2 throwVector = transform.position - collidingObject.transform.position + Vector3.up * .1f;
+            //    gameObject.rigidbody2D.AddForce(throwVector * Mathf.Abs(collidingObject.rigidbody.velocity.x) * 50);
 			
-				collider2D.enabled = false;
-				StartCoroutine(AttackCooldownRoutine());
+            //    collider2D.enabled = false;
+            //    StartCoroutine(AttackCooldownRoutine());
 
-				KillCountdown();
-			}
-			else
-			{
+            //    KillCountdown();
+            //}
+            //else
+            //{
 				//Let player take damage
 				collidingObject.gameObject.GetComponent<Player>().TakeDamage(enemyDamage);
 
 				//Make player jump from damage
 				Vector3 hurtVector = collidingObject.transform.position - this.transform.position + Vector3.up * 5f;
 				collidingObject.gameObject.rigidbody2D.AddForce(hurtVector * 30);
-			}
+			//}
 		}
 	}
 

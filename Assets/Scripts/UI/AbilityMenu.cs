@@ -84,7 +84,7 @@ public class AbilityMenu : MonoBehaviour
 		}
 
 		//Movement
-		if (m_Player.m_Acceleration > 0)  { m_Buttons[0].interactable = true; }
+		if (m_Player.m_RunSpeed > 0)      { m_Buttons[0].interactable = true; }
 		if (m_Player.m_DashDuration > 0 ) { m_Buttons[1].interactable = true; }
 
 		//Jumping
@@ -110,7 +110,7 @@ public class AbilityMenu : MonoBehaviour
 		{
 			case Ability.Run:
 				Debug.Log ("We removed the run ability!");
-				m_Player.m_Acceleration = 0.0f;
+				m_Player.m_RunSpeed = 0.0f;
 				break;
 				
 			case Ability.Dash:
